@@ -1,0 +1,14 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Créer un compte | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: registrationForm,
+  title: 'Créer un compte administrateur',
+  subtitle: 'La personne pourra se connecter à cette administration.',
+  back_url: path('app_admin'),
+  submit_label: 'Créer le compte',
+  tips: ['Ne créez un compte que pour les personnes qui gèrent le contenu du site.', 'Chaque personne doit avoir son propre compte.'],
+} %}
+{% endblock %}

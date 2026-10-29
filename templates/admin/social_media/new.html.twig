@@ -1,0 +1,13 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Ajouter un réseau social | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Ajouter un réseau social',
+  back_url: path('admin.social.index'),
+  submit_label: 'Ajouter',
+  tips: ['Copiez l\'adresse complète de la page (https://…). Un lien invalide n\'est pas affiché sur le site.', 'L\'icône est affichée en petit (format carré conseillé).'],
+} %}
+{% endblock %}

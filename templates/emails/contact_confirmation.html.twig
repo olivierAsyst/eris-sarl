@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Message reçu</title></head>
+<body style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;background:#f3f4f6;margin:0;padding:24px">
+  <table role="presentation" width="100%" style="max-width:640px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden">
+    <tr><td style="background:#15803d;color:#fff;padding:20px 24px;font-size:18px;font-weight:bold">ERIS SARL</td></tr>
+    <tr><td style="padding:24px;font-size:15px;line-height:1.6">
+      <p>Bonjour {{ contact.fullName }},</p>
+      <p>Nous avons bien reçu votre message (<strong>{{ contact.subjectLabel|lower }}</strong>) et nous vous en remercions.
+         Notre équipe vous répondra dans les meilleurs délais, en général sous 48 heures ouvrées.</p>
+      <p style="color:#6b7280;font-size:13px">Rappel de votre message :</p>
+      <div style="padding:12px 16px;background:#f9fafb;border-left:4px solid #16a34a;white-space:pre-line;font-size:14px">{{ contact.message }}</div>
+      <p style="margin-top:20px">Pour toute urgence : {{ contact_phone_display }}.</p>
+      <p>Cordialement,<br>L'équipe ERIS SARL</p>
+    </td></tr>
+  </table>
+</body></html>

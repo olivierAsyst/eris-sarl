@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ (realisation.name),
+  back_url: path('admin.realisation.index'),
+  delete_url: path('admin.realisation.delete', {id: realisation.id}),
+  entity_id: realisation.id,
+  preview_url: realisation.imageUrl ? media(realisation, 'image', 'card') : null,
+  public_url: path('app_realisation_show', {id: realisation.id, slug: realisation.slug}),
+  tips: ['Reliez le projet à un service : il apparaîtra sur la page du service.', 'Décrivez le contexte, les travaux réalisés et les résultats.', 'Les 3 réalisations les plus récentes sont affichées sur l\'accueil.'],
+} %}
+{% endblock %}

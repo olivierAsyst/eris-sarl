@@ -1,0 +1,13 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Ajouter un service | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Ajouter un service',
+  back_url: path('admin.services.index'),
+  submit_label: 'Ajouter',
+  tips: ['Le nom apparaît dans le menu, le pied de page et l\'adresse de la page.', 'Dans la description, faites des retours à la ligne et des listes avec « - » : ils sont conservés sur le site.', 'Une image horizontale (paysage) rend mieux.'],
+} %}
+{% endblock %}

@@ -1,0 +1,125 @@
+{#
+    Gabarit principal.
+    Blocs SEO à surcharger dans chaque page :
+      - title             : titre de la page (sans le nom du site, ajouté automatiquement)
+      - meta_description  : description pour Google (≈ 155 caractères)
+      - og_image          : URL absolue de l'image de partage
+      - og_type           : website | article
+      - robots            : index,follow par défaut
+      - structured_data   : JSON-LD spécifique à la page
+#}
+{%- set default_description = "ERIS SARL, bureau d'études et entreprise de génie civil à Goma (RDC) : infrastructures, eau potable et assainissement, hydro-agriculture, gestion des eaux et des sols, résilience climatique." -%}
+{%- set page_title = block('title') is defined ? block('title')|trim : '' -%}
+{%- set canonical = app.request.attributes.get('_route') ? url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})) : app.request.uri -%}
+{%- set site_url = app.request.schemeAndHttpHost -%}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% if page_title %}{{ page_title|raw }} | {{ site_name }}{% else %}{{ site_name }} – Engineering for Revolutionary Infrastructures Solutions{% endif %}</title>
+        <meta name="description" content="{% block meta_description %}{{ default_description }}{% endblock %}">
+        <meta name="robots" content="{% block robots %}index, follow, max-image-preview:large{% endblock %}">
+        <link rel="canonical" href="{{ canonical }}">
+        <meta name="theme-color" content="#15803d">
+        <meta name="google-site-verification" content="_1opBxAAIWTcdtVkQn2n-g8SSHezuK8wqijNBaJWcOg">
+
+        {# Partage sur les réseaux sociaux (Facebook, LinkedIn, WhatsApp, X) #}
+        <meta property="og:site_name" content="{{ site_name }}">
+        <meta property="og:locale" content="fr_FR">
+        <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+        <meta property="og:title" content="{{ (page_title ?: site_name)|raw }}">
+        <meta property="og:description" content="{{ block('meta_description')|trim|raw }}">
+        <meta property="og:url" content="{{ canonical }}">
+        <meta property="og:image" content="{% block og_image %}{{ site_url ~ asset('images/eris-logos.png') }}{% endblock %}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ (page_title ?: site_name)|raw }}">
+        <meta name="twitter:description" content="{{ block('meta_description')|trim|raw }}">
+        <meta name="twitter:image" content="{{ block('og_image')|trim|raw }}">
+
+        <link rel="icon" type="image/png" href="{{ asset('images/eris-logos.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/eris-logos.png') }}">
+
+        {# Active les animations seulement si JavaScript fonctionne (sinon le contenu reste visible) #}
+        <script>document.documentElement.classList.add('js')</script>
+
+        {# Police Plus Jakarta Sans (affichage immédiat avec la police système, puis échange) #}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+        {# CSS compilé (Tailwind) — voir assets/styles/app.css #}
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        {# Icônes Line Awesome : chargées sans bloquer l'affichage #}
+        <link rel="preconnect" href="https://maxst.icons8.com" crossorigin>
+        <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" media="print" onload="this.media='all'">
+        <noscript><link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css"></noscript>
+
+        {% block preload %}{% endblock %}
+        {% block stylesheets %}{% endblock %}
+
+        {# Données structurées : l'entreprise (aide Google à afficher la fiche) #}
+        <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'GeneralContractor',
+            '@id': site_url ~ '/#organisation',
+            'name': 'ERIS SARL',
+            'legalName': 'ERIS SARL – Engineering for Revolutionary Infrastructures Solutions',
+            'url': site_url ~ '/',
+            'logo': site_url ~ asset('images/eris-logos.png'),
+            'image': site_url ~ asset('images/eris-logos.png'),
+            'description': default_description,
+            'foundingDate': '2021',
+            'email': contact_email,
+            'telephone': contact_phone,
+            'address': {
+                '@type': 'PostalAddress',
+                'streetAddress': '142, avenue FAGOP, quartier Kyeshero',
+                'addressLocality': 'Goma',
+                'addressRegion': 'Nord-Kivu',
+                'addressCountry': 'CD'
+            },
+            'areaServed': [{'@type': 'Country', 'name': 'République démocratique du Congo'}],
+            'sameAs': social_links()|map(s => s.lien)
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_PRETTY_PRINT'))|raw }}
+        </script>
+        {% block structured_data %}{% endblock %}
+    </head>
+    <body class="bg-white text-gray-900 antialiased">
+        <a href="#contenu" class="skip-link">Aller au contenu principal</a>
+
+        {% block header %}{% include "_partials/_header.html.twig" %}{% endblock %}
+
+        <main id="contenu" tabindex="-1">
+            {% block flashes %}
+            {% for type, messages in app.flashes(['success', 'error', 'warning']) %}
+                {% for message in messages %}
+                    <div role="{{ type == 'success' ? 'status' : 'alert' }}" class="container-x mt-6">
+                        <div class="rounded-xl p-4 text-sm font-medium {{ type == 'success' ? 'bg-brand-50 text-brand-800 ring-1 ring-brand-200' : 'bg-red-50 text-red-800 ring-1 ring-red-200' }}">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% endblock %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+        {% block footer %}{% include "_partials/_footer.html.twig" %}{% endblock %}
+
+        {% block floating %}
+            <a href="https://wa.me/{{ whatsapp_number }}?text={{ 'Bonjour ERIS SARL, '|url_encode }}" target="_blank" rel="noopener noreferrer"
+               class="fab fab-whatsapp" aria-label="Nous écrire sur WhatsApp (nouvel onglet)" title="WhatsApp">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.04 21.5h-.01a9.43 9.43 0 0 1-4.8-1.32l-.35-.2-3.56.93.95-3.47-.23-.36A9.43 9.43 0 0 1 2.6 12.04C2.6 6.83 6.83 2.6 12.05 2.6c2.52 0 4.9.99 6.68 2.77a9.38 9.38 0 0 1 2.76 6.68c0 5.21-4.24 9.45-9.45 9.45zm8.04-17.49A11.3 11.3 0 0 0 12.04.7C5.78.7.69 5.78.69 12.04c0 2 .52 3.95 1.52 5.67L.6 23.3l5.73-1.5a11.33 11.33 0 0 0 5.71 1.46h.01c6.26 0 11.35-5.09 11.35-11.35 0-3.03-1.18-5.88-3.32-8.02z"/></svg>
+            </a>
+            <button type="button" id="to-top" class="fab to-top" aria-label="Revenir en haut de la page">
+                <i class="las la-arrow-up text-xl" aria-hidden="true"></i>
+            </button>
+        {% endblock %}
+
+        <script src="{{ asset('js/app.js') }}" defer></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,13 @@
+{# Bouton de suppression (POST + jeton CSRF). Paramètres : url, id, label?, compact? #}
+<form method="post" action="{{ url }}" data-confirm="Supprimer définitivement cet élément ? Cette action est irréversible." class="inline">
+  <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ id) }}">
+  {% if compact|default(false) %}
+    <button class="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600" title="Supprimer" aria-label="Supprimer">
+      <i class="las la-trash-alt text-lg" aria-hidden="true"></i>
+    </button>
+  {% else %}
+    <button class="btn btn-sm w-full border border-red-200 bg-white text-red-700 hover:bg-red-50">
+      <i class="las la-trash-alt" aria-hidden="true"></i> {{ label|default('Supprimer') }}
+    </button>
+  {% endif %}
+</form>

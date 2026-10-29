@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ (social_media.name),
+  back_url: path('admin.social.index'),
+  delete_url: path('admin.social.delete', {id: social_media.id}),
+  entity_id: social_media.id,
+  preview_url: social_media.icon ? media(social_media, 'image', 'icon') : null,
+  public_url: path('app_home'),
+  tips: ['Copiez l\'adresse complète de la page (https://…). Un lien invalide n\'est pas affiché sur le site.', 'L\'icône est affichée en petit (format carré conseillé).'],
+} %}
+{% endblock %}

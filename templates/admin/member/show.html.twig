@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: member.fullName,
+  back_url: path('admin.member.index'),
+  edit_url: path('admin.member.edit', {id: member.id}),
+  delete_url: path('admin.member.delete', {id: member.id}),
+  entity_id: member.id,
+  image_url: media(member, 'image', 'avatar', 'images/profile.svg'),
+  public_url: path('app_front_member'),
+  fields: [{label: 'Nom complet', value: member.fullName}, {label: 'Fonction', value: member.fonction}, {label: 'LinkedIn', value: member.linkedinlink, type: 'link'}, {label: 'Facebook', value: member.facebookLink, type: 'link'}, {label: 'X (Twitter)', value: member.xlink, type: 'link'}, {label: 'Présentation', value: member.description, type: 'long'}],
+} %}
+{% endblock %}

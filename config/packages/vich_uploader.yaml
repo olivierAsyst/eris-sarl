@@ -1,0 +1,37 @@
+vich_uploader:
+    db_driver: orm
+
+    mappings:
+       member:
+           uri_prefix: /images/member
+           upload_destination: '%kernel.project_dir%/public/images/member'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+       galerie:
+           uri_prefix: /images/galerie
+           upload_destination: '%kernel.project_dir%/public/images/galerie'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+       
+       partner:
+           uri_prefix: /images/partner
+           upload_destination: '%kernel.project_dir%/public/images/partner'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+       
+       social:
+           uri_prefix: /images/social
+           upload_destination: '%kernel.project_dir%/public/images/social'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+       
+       home_video:
+           uri_prefix: /videos/home_video
+           upload_destination: '%kernel.project_dir%/public/videos/home_video'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+       
+       services:
+           uri_prefix: /images/services
+           upload_destination: '%kernel.project_dir%/public/images/services'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+       realisations:
+           uri_prefix: /images/realisations
+           upload_destination: '%kernel.project_dir%/public/images/realisations'
+           namer: Vich\UploaderBundle\Naming\SmartUniqueNamer

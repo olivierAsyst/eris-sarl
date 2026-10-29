@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ ('Photo – ' ~ image_galery.lieu),
+  back_url: path('admin.galery.index'),
+  delete_url: path('admin.galery.delete', {id: image_galery.id}),
+  entity_id: image_galery.id,
+  preview_url: image_galery.imageUrl ? media(image_galery, 'image', 'gallery_thumb') : null,
+  public_url: path('app_front_image'),
+  tips: ['Indiquez le lieu de la prise de vue (ville, site).', 'La description sert de texte alternatif pour l\'accessibilité et Google.'],
+} %}
+{% endblock %}

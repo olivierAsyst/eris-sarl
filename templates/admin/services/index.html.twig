@@ -1,0 +1,34 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Services | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.services.create') }}" class="btn btn-primary btn-sm"><i class="las la-plus" aria-hidden="true"></i> Ajouter un service</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Services', subtitle: services|length ~ ' service(s) affiché(s) sur le site', actions: actions} %}
+
+{% if services is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-tools', text: 'Aucun service pour le moment.', url: path('admin.services.create'), label: 'Ajouter un service'} %}
+{% else %}
+  <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+    {% for s in services %}
+      <article class="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5 transition hover:shadow-lg">
+        <a href="{{ path('admin.services.update', {id: s.id}) }}" class="relative block aspect-[16/9] bg-brand-50">
+          {% if s.imageUrl %}
+            <img src="{{ media(s, 'image', 'card') }}" alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+          {% else %}
+            <span class="absolute inset-0 grid place-items-center text-brand-300"><i class="las la-image text-5xl" aria-hidden="true"></i></span>
+          {% endif %}
+          <span class="absolute left-3 top-3 chip bg-white/90">{{ s.realisations|length }} projet(s)</span>
+        </a>
+        <div class="p-5">
+          <h2 class="font-bold text-gray-900"><a href="{{ path('admin.services.update', {id: s.id}) }}" class="hover:text-brand-700">{{ s.name }}</a></h2>
+          <p class="mt-1 line-clamp-2 text-sm text-gray-500">{{ s.description|excerpt(120) }}</p>
+          <div class="mt-4 flex items-center gap-1 border-t border-gray-100 pt-3">
+            <a href="{{ path('admin.services.update', {id: s.id}) }}" class="btn btn-outline btn-sm"><i class="las la-pen" aria-hidden="true"></i> Modifier</a>
+            <a href="{{ path('app_service_show', {slug: s.slug}) }}" target="_blank" class="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700" title="Voir sur le site" aria-label="Voir {{ s.name }} sur le site"><i class="las la-external-link-alt text-lg" aria-hidden="true"></i></a>
+            <span class="ml-auto">{% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.services.delete', {id: s.id}), id: s.id, compact: true} %}</span>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

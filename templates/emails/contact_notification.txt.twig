@@ -1,0 +1,11 @@
+Nouveau message du site – {{ contact.subjectLabel }}
+
+Nom : {{ contact.fullName }}
+E-mail : {{ contact.email }}
+{% if contact.phone %}Téléphone : {{ contact.phone }}
+{% endif %}{% if contact.organization %}Organisation : {{ contact.organization }}
+{% endif %}Reçu le : {{ contact.createdAt|date('d/m/Y à H:i') }}
+
+{{ contact.message }}
+
+-- Répondez directement à cet e-mail pour écrire à l'expéditeur.

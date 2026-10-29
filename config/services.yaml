@@ -1,0 +1,32 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    # Adresse qui reçoit les messages du formulaire de contact.
+    # Peut être remplacée sans toucher au code via la variable CONTACT_EMAIL (.env.local).
+    app.contact_email_default: 'contact@eris-sarl.com'
+    app.contact_email: '%env(default:app.contact_email_default:CONTACT_EMAIL)%'
+    # Expéditeur des e-mails du site : doit être une adresse du domaine (SPF/DKIM)
+    # et correspondre au compte utilisé dans MAILER_DSN.
+    app.mailer_from_default: 'no-reply@eris-sarl.com'
+    app.mailer_from: '%env(default:app.mailer_from_default:MAILER_FROM)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones

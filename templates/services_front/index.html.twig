@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos services{% endblock %}
+{% block meta_description %}Génie civil, eau potable et assainissement, gestion intégrée des eaux et des sols, résilience climatique, hydro-agriculture : découvrez les services d'ERIS SARL en RDC.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{% set list = [] %}
+{% for s in services %}
+  {% set list = list|merge([{'@type': 'ListItem', 'position': loop.index, 'url': url('app_service_show', {slug: s.slug}), 'name': s.name}]) %}
+{% endfor %}
+{{ {'@context': 'https://schema.org', '@type': 'ItemList', 'itemListElement': list}|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+</script>
+{% endblock %}
+
+{% block body %}
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'Services'}],
+  eyebrow: "Nos domaines d'expertise",
+  title: 'Nos services',
+  lead: "De l'étude à la réalisation et au suivi, nous accompagnons vos projets dans chacun de ces domaines.",
+} %}
+
+<section class="section">
+  <div class="container-x">
+    {% if services is not empty %}
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for service in services %}
+          {% include 'services_front/_card.html.twig' with {service: service, index: loop.index} only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center text-gray-500">Nos services seront bientôt présentés ici.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% include '_partials/_contact_paths.html.twig' %}
+{% endblock %}

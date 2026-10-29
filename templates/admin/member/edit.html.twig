@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ (member.fullName),
+  back_url: path('admin.member.index'),
+  delete_url: path('admin.member.delete', {id: member.id}),
+  entity_id: member.id,
+  preview_url: media(member, 'image', 'avatar', 'images/profile.svg'),
+  public_url: path('app_front_member'),
+  tips: ['Utilisez une photo carrée, visage centré.', 'Les liens doivent être complets (https://…).', 'Les 4 premiers membres apparaissent sur l\'accueil.'],
+} %}
+{% endblock %}

@@ -1,0 +1,13 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        # Coordonnées affichées sur tout le site (un seul endroit à modifier)
+        site_name: 'ERIS SARL'
+        contact_email: '%app.contact_email%'
+        contact_phone: '+243978113552'
+        contact_phone_display: '+243 978 113 552'
+        whatsapp_number: '243978113552'
+
+when@test:
+    twig:
+        strict_variables: true

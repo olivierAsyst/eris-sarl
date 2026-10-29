@@ -1,0 +1,94 @@
+{% set route = app.request.attributes.get('_route') %}
+{% set nav = [
+    { label: 'Accueil', route: 'app_home', active: ['app_home'], icon: 'la-home' },
+    { label: 'Services', route: 'app_services_front', active: ['app_services_front', 'app_service_show'], icon: 'la-tools' },
+    { label: 'Réalisations', route: 'app_realisation_front', active: ['app_realisation_front', 'app_realisation_show'], icon: 'la-hard-hat' },
+    { label: 'Galerie', route: 'app_front_image', active: ['app_front_image'], icon: 'la-images' },
+    { label: 'À propos', route: 'app_about', active: ['app_about', 'app_front_member'], icon: 'la-building' },
+    { label: 'Contact', route: 'app_contact', active: ['app_contact'], icon: 'la-envelope' },
+] %}
+{% set logo = 'images/eris-logos.png'|imagine_filter('logo') %}
+
+<header class="header w-full">
+  <div class="container-x">
+    <div class="flex h-[72px] items-center justify-between gap-4">
+      <a href="{{ path('app_home') }}" class="flex items-center gap-2 shrink-0" aria-label="ERIS SARL – retour à l'accueil">
+        <img src="{{ logo }}" alt="ERIS SARL" width="120" height="44" class="h-11 w-auto">
+      </a>
+
+      {# Navigation ordinateur #}
+      <nav class="hidden lg:flex items-center gap-1" aria-label="Navigation principale">
+        {% for item in nav %}
+          <a href="{{ path(item.route) }}" class="nav-link" {% if route in item.active %}aria-current="page"{% endif %}>{{ item.label }}</a>
+        {% endfor %}
+      </nav>
+
+      <div class="hidden lg:flex items-center gap-3">
+        {% if is_granted('ROLE_USER') %}
+          <a href="{{ path('app_admin') }}" class="btn btn-outline btn-sm"><i class="las la-cog" aria-hidden="true"></i> Admin</a>
+          <a href="{{ path('app_logout') }}" class="text-sm font-semibold text-gray-500 hover:text-gray-900">Déconnexion</a>
+        {% else %}
+          <a href="tel:{{ contact_phone }}" class="hidden xl:inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-brand-700">
+            <span class="grid h-9 w-9 place-items-center rounded-full bg-brand-50 text-brand-700"><i class="las la-phone text-lg" aria-hidden="true"></i></span>
+            {{ contact_phone_display }}
+          </a>
+          <a href="{{ path('app_contact', {sujet: 'devis'}) }}" class="btn btn-primary btn-sm">Demander un devis</a>
+        {% endif %}
+      </div>
+
+      {# Bouton du menu mobile #}
+      <button id="mobile-menu-button" type="button"
+              class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-full text-gray-800 hover:bg-brand-50 hover:text-brand-700"
+              aria-controls="mobile-menu" aria-expanded="false" aria-label="Ouvrir le menu">
+        <svg class="h-7 w-7 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-width="2" d="M4 7h16M4 12h16M10 17h10"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+{# Menu mobile (hors du <header> sticky pour couvrir tout l'écran) #}
+<div id="menu-backdrop" class="menu-backdrop lg:hidden fixed inset-0 z-40 bg-brand-950/50 backdrop-blur-sm" aria-hidden="true"></div>
+<div id="mobile-menu" class="mobile-menu lg:hidden fixed inset-y-0 right-0 z-50 flex w-[22rem] max-w-[88vw] flex-col bg-white shadow-2xl"
+     role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+  <div class="flex items-center justify-between px-6 h-[72px] border-b border-gray-100">
+    <img src="{{ logo }}" alt="ERIS SARL" width="96" height="36" class="h-9 w-auto">
+    <button id="close-menu-button" type="button" class="grid h-10 w-10 place-items-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900" aria-label="Fermer le menu">
+      <svg class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto px-4 py-5" aria-label="Navigation mobile">
+    <ul class="space-y-1">
+      {% for item in nav %}
+        {% set active = route in item.active %}
+        <li>
+          <a href="{{ path(item.route) }}"
+             class="flex items-center gap-3 rounded-xl px-3 py-3 text-base font-semibold {{ active ? 'bg-brand-50 text-brand-800' : 'text-gray-800 hover:bg-gray-50' }}"
+             {% if active %}aria-current="page"{% endif %}>
+            <span class="grid h-9 w-9 place-items-center rounded-lg {{ active ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600' }}"><i class="las {{ item.icon }} text-lg" aria-hidden="true"></i></span>
+            {{ item.label }}
+            <i class="las la-angle-right ml-auto text-gray-400" aria-hidden="true"></i>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="border-t border-gray-100 p-5 space-y-3">
+    <a href="{{ path('app_contact', {sujet: 'devis'}) }}" class="btn btn-primary w-full">Demander un devis</a>
+    <div class="grid grid-cols-2 gap-3">
+      <a href="tel:{{ contact_phone }}" class="btn btn-outline btn-sm"><i class="las la-phone" aria-hidden="true"></i> Appeler</a>
+      <a href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm"><i class="lab la-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+    </div>
+    {% if is_granted('ROLE_USER') %}
+      <div class="flex justify-center gap-6 pt-1 text-sm font-semibold">
+        <a href="{{ path('app_admin') }}" class="text-gray-700">Administration</a>
+        <a href="{{ path('app_logout') }}" class="text-gray-500">Déconnexion</a>
+      </div>
+    {% endif %}
+  </div>
+</div>

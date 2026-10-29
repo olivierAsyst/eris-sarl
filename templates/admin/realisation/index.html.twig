@@ -1,0 +1,53 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Réalisations | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.realisation.new') }}" class="btn btn-primary btn-sm"><i class="las la-plus" aria-hidden="true"></i> Ajouter une réalisation</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Réalisations', subtitle: realisations|length ~ ' projet(s) — les 3 plus récents apparaissent sur l’accueil', actions: actions} %}
+
+{% if realisations is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-hard-hat', text: 'Aucune réalisation pour le moment.', url: path('admin.realisation.new'), label: 'Ajouter une réalisation'} %}
+{% else %}
+  <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+        <tr>
+          <th scope="col" class="px-5 py-3">Projet</th>
+          <th scope="col" class="hidden px-5 py-3 md:table-cell">Service</th>
+          <th scope="col" class="px-5 py-3 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for r in realisations|sort((a, b) => b.id <=> a.id) %}
+          <tr class="hover:bg-gray-50/70">
+            <td class="px-5 py-3">
+              <a href="{{ path('admin.realisation.edit', {id: r.id}) }}" class="flex items-center gap-4">
+                <span class="h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-brand-50">
+                  {% if r.imageUrl %}<img src="{{ media(r, 'image', 'card') }}" alt="" class="h-full w-full object-cover" loading="lazy">{% endif %}
+                </span>
+                <span class="min-w-0">
+                  <span class="block truncate font-semibold text-gray-900">{{ r.name }}</span>
+                  <span class="block truncate text-xs text-gray-500">{{ r.description|excerpt(80) }}</span>
+                </span>
+              </a>
+            </td>
+            <td class="hidden px-5 py-3 md:table-cell">
+              {% if r.service %}
+                <span class="chip">{{ r.service.name }}</span>
+              {% else %}
+                <span class="chip bg-amber-50 text-amber-700"><i class="las la-exclamation-triangle" aria-hidden="true"></i> Aucun service</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-3">
+              <div class="flex items-center justify-end gap-1">
+                <a href="{{ path('admin.realisation.edit', {id: r.id}) }}" class="grid h-9 w-9 place-items-center rounded-lg text-gray-500 hover:bg-brand-50 hover:text-brand-700" title="Modifier" aria-label="Modifier {{ r.name }}"><i class="las la-pen text-lg" aria-hidden="true"></i></a>
+                <a href="{{ path('app_realisation_show', {id: r.id, slug: r.slug}) }}" target="_blank" class="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700" title="Voir sur le site" aria-label="Voir {{ r.name }} sur le site"><i class="las la-external-link-alt text-lg" aria-hidden="true"></i></a>
+                {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.realisation.delete', {id: r.id}), id: r.id, compact: true} %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}

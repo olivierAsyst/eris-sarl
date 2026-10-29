@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ service.name }}{% endblock %}
+{% block meta_description %}{{ service.description|meta_description }}{% endblock %}
+{% block og_image %}{{ service.imageUrl ? absolute_url(media(service, 'image', 'og_image')) : parent() }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{{ {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  'name': service.name,
+  'description': service.description|excerpt(500),
+  'url': url('app_service_show', {slug: service.slug}),
+  'image': service.imageUrl ? absolute_url(media(service, 'image', 'og_image')) : null,
+  'provider': {'@id': app.request.schemeAndHttpHost ~ '/#organisation'},
+  'areaServed': {'@type': 'Country', 'name': 'République démocratique du Congo'}
+}|filter(v => v is not null)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+</script>
+{% endblock %}
+
+{% block body %}
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'Services', url: path('app_services_front')}, {label: service.name}],
+  eyebrow: 'Service',
+  title: service.name,
+  image: service.imageUrl ? media(service, 'image', 'hero') : null,
+} %}
+
+<article class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-8">
+      {% if service.imageUrl %}
+        <img src="{{ media(service, 'image', 'detail') }}" alt="{{ service.name }}" width="1200" height="750" decoding="async"
+             class="mb-10 w-full rounded-3xl object-cover shadow-xl max-h-[500px] reveal">
+      {% endif %}
+      <h2 class="text-2xl font-extrabold text-gray-900 mb-4">Présentation</h2>
+      <div class="prose-text">{{ service.description }}</div>
+    </div>
+
+    <aside class="lg:col-span-4">
+      <div class="lg:sticky lg:top-24 space-y-6">
+        <div class="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 to-brand-900 p-7 text-white shadow-xl">
+          <span class="grid h-12 w-12 place-items-center rounded-2xl bg-white/10"><i class="las la-file-invoice-dollar text-2xl text-accent" aria-hidden="true"></i></span>
+          <h2 class="mt-5 text-xl font-bold">Un projet dans ce domaine ?</h2>
+          <p class="mt-2 text-brand-100/90">Décrivez votre besoin : nous revenons vers vous avec une proposition adaptée.</p>
+          <a href="{{ path('app_contact', {sujet: 'devis', objet: service.name}) }}#contact-form" class="btn btn-accent mt-6 w-full">Demander un devis</a>
+          <a href="tel:{{ contact_phone }}" class="btn btn-ghost-light mt-3 w-full"><i class="las la-phone" aria-hidden="true"></i> {{ contact_phone_display }}</a>
+        </div>
+
+        {% if others is not empty %}
+          <nav class="rounded-3xl bg-gray-50 p-6 ring-1 ring-gray-900/5" aria-labelledby="other-services">
+            <h2 id="other-services" class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Autres services</h2>
+            <ul class="divide-y divide-gray-200">
+              {% for o in others %}
+                <li>
+                  <a href="{{ path('app_service_show', {slug: o.slug}) }}" class="group flex items-center justify-between py-3 font-semibold text-gray-800 hover:text-brand-700">
+                    {{ o.name }} <i class="las la-arrow-right text-gray-400 transition group-hover:translate-x-1 group-hover:text-brand-600" aria-hidden="true"></i>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </nav>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</article>
+
+{# Réalisations liées au service #}
+<section class="section bg-gray-50" aria-labelledby="service-projects">
+  <div class="container-x">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-10">
+      <div>
+        <p class="eyebrow mb-3">Références</p>
+        <h2 id="service-projects" class="section-title">Nos réalisations dans ce domaine</h2>
+      </div>
+      {% if service.realisations|length %}
+        <a href="{{ path('app_realisation_front', {service: service.slug}) }}" class="link-arrow">Tous les projets <i class="las la-arrow-right" aria-hidden="true"></i></a>
+      {% endif %}
+    </div>
+
+    {% if service.realisations|length %}
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for r in service.realisations|slice(0, 3) %}
+          {% include 'realisation_front/_card.html.twig' with {realisation: r} only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-3xl border-2 border-dashed border-gray-200 p-10 text-center">
+        <p class="text-gray-600">Les projets de ce domaine seront bientôt présentés.</p>
+        <a href="{{ path('app_realisation_front') }}" class="link-arrow mt-3">Voir toutes nos réalisations <i class="las la-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    {% endif %}
+
+    <div class="mt-12">
+      <a href="{{ path('app_services_front') }}" class="link-arrow"><i class="las la-arrow-left" aria-hidden="true"></i> Retour à la liste des services</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

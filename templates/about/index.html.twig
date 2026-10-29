@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}À propos de nous{% endblock %}
+{% block meta_description %}ERIS SARL, société créée en 2021 à Goma (RDC) : génie civil, agro-alimentaire, environnement. Raison sociale, siège, RCCM et valeurs de l'entreprise.{% endblock %}
+
+{% block body %}
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'À propos'}],
+  eyebrow: 'Qui sommes-nous ?',
+  title: 'Engineering for Revolutionary Infrastructures Solutions',
+  lead: "ERIS SARL est une Société à Responsabilité Limitée créée en 2021 à Goma, spécialisée dans le génie civil, l'agro-alimentaire et l'environnement.",
+  image: 'images/goma.jpg'|imagine_filter('hero'),
+} %}
+
+{# Engagement + valeurs #}
+<section class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-2 lg:items-center">
+    <div class="reveal">
+      <p class="eyebrow mb-3">Notre engagement</p>
+      <h2 class="section-title">Des solutions innovantes pour des infrastructures durables</h2>
+      <p class="section-lead mt-5">
+        Établie à Goma depuis 2021, ERIS SARL s'engage à fournir des solutions innovantes et durables dans les domaines du génie civil, de l'agro-alimentaire et de l'environnement.
+      </p>
+      <p class="mt-4 text-gray-600 leading-relaxed">
+        Notre approche combine expertise technique, qualité de service et respect des normes environnementales pour répondre aux défis des infrastructures modernes.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{{ path('app_front_member') }}" class="btn btn-primary">Rencontrer l'équipe <i class="las la-arrow-right" aria-hidden="true"></i></a>
+        <a href="{{ path('app_services_front') }}" class="btn btn-outline">Nos services</a>
+      </div>
+    </div>
+
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {% for v in [
+        {icon: 'la-lightbulb', title: 'Innovation technologique', text: 'Des méthodes et outils modernes au service de chaque projet.'},
+        {icon: 'la-shield-alt', title: 'Qualité et durabilité', text: 'Des ouvrages conçus pour durer et résister aux contraintes locales.'},
+        {icon: 'la-leaf', title: "Respect de l'environnement", text: 'Préserver les ressources en eau, les sols et les écosystèmes.'},
+        {icon: 'la-smile', title: 'Satisfaction client', text: 'Écoute, transparence et respect des délais à chaque étape.'},
+      ] %}
+        <li class="card p-6 reveal" style="--d:{{ loop.index0 * 80 }}ms">
+          <span class="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-700"><i class="las {{ v.icon }} text-2xl" aria-hidden="true"></i></span>
+          <h3 class="mt-4 font-bold text-gray-900">{{ v.title }}</h3>
+          <p class="mt-1.5 text-sm text-gray-600 leading-relaxed">{{ v.text }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{# Fiche d'identité #}
+<section class="section bg-gray-50" aria-labelledby="identity-title">
+  <div class="container-x">
+    <div class="max-w-2xl mb-10 reveal">
+      <p class="eyebrow mb-3">Fiche d'identité</p>
+      <h2 id="identity-title" class="section-title">L'entreprise en bref</h2>
+    </div>
+
+    <dl class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {% for item in [
+        {icon: 'la-city', label: 'Raison sociale', value: 'ERIS SARL – Engineering for Revolutionary Infrastructures Solutions'},
+        {icon: 'la-balance-scale', label: 'Forme juridique', value: "Société à Responsabilité Limitée, régie par l'acte uniforme OHADA, créée en 2021"},
+        {icon: 'la-hard-hat', label: 'Activités', value: 'Génie civil, agro-alimentaire, environnement, acquisition de brevets et concessions'},
+        {icon: 'la-map-marked-alt', label: 'Siège social', value: 'N°142, avenue FAGOP, quartier Kyeshero, commune de Goma, Nord-Kivu, RDC'},
+      ] %}
+        <div class="card p-6 reveal" style="--d:{{ loop.index0 % 3 * 80 }}ms">
+          <dt class="flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-gray-500">
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-brand-600 text-white"><i class="las {{ item.icon }} text-xl" aria-hidden="true"></i></span>
+            {{ item.label }}
+          </dt>
+          <dd class="mt-4 text-lg font-semibold leading-snug text-gray-900">{{ item.value }}</dd>
+        </div>
+      {% endfor %}
+
+      <div class="card p-6 reveal">
+        <dt class="flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-gray-500">
+          <span class="grid h-10 w-10 place-items-center rounded-xl bg-brand-600 text-white"><i class="las la-file-contract text-xl" aria-hidden="true"></i></span>
+          Registre de commerce
+        </dt>
+        <dd class="mt-4 space-y-1 text-sm text-gray-800">
+          <p><span class="text-gray-500">RCCM :</span> <strong>CD/GOM/RCCM/21-B-00245</strong></p>
+          <p><span class="text-gray-500">ID. NAT. :</span> <strong>19-F4200-N95803Y</strong></p>
+          <p><span class="text-gray-500">N° Impôt :</span> <strong>A2177039</strong></p>
+          <p><span class="text-gray-500">CNSS :</span> <strong>1015783200</strong></p>
+        </dd>
+      </div>
+
+      <div class="card p-6 reveal">
+        <dt class="flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-gray-500">
+          <span class="grid h-10 w-10 place-items-center rounded-xl bg-brand-600 text-white"><i class="las la-user-tie text-xl" aria-hidden="true"></i></span>
+          Personne à contacter
+        </dt>
+        <dd class="mt-4 space-y-1.5 text-sm">
+          <p class="text-lg font-semibold text-gray-900">Alain SANTA NGABO</p>
+          <p><a href="tel:+243971052967" class="text-brand-700 hover:underline">+243 971 052 967</a></p>
+          <p><a href="mailto:{{ contact_email }}" class="text-brand-700 hover:underline break-all">{{ contact_email }}</a></p>
+          <p><a href="mailto:alainngabo1@gmail.com" class="text-brand-700 hover:underline break-all">alainngabo1@gmail.com</a></p>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{% include '_partials/_contact_paths.html.twig' %}
+{% endblock %}

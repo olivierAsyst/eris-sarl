@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: partner.name,
+  back_url: path('admin.partner.index'),
+  edit_url: path('admin.partner.edit', {id: partner.id}),
+  delete_url: path('admin.partner.delete', {id: partner.id}),
+  entity_id: partner.id,
+  image_url: partner.logo ? media(partner, 'image', 'logo') : null,
+  public_url: path('app_home'),
+  fields: [{label: 'Nom', value: partner.name}, {label: 'Site web', value: partner.links, type: 'link'}],
+} %}
+{% endblock %}

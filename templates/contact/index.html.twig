@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact et demande de devis{% endblock %}
+{% block meta_description %}Contactez ERIS SARL à Goma (RDC) : demande de devis, partenariat, information ou candidature. Réponse sous 48 h ouvrées. Tél. {{ contact_phone_display }}.{% endblock %}
+
+{# Les messages flash sont affichés à côté du formulaire #}
+{% block flashes %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{{ {'@context': 'https://schema.org', '@type': 'ContactPage', 'name': 'Contact ERIS SARL', 'url': url('app_contact'), 'about': {'@id': app.request.schemeAndHttpHost ~ '/#organisation'}}|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+</script>
+{% endblock %}
+
+{% block body %}
+{% import _self as forms %}
+
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'Contact'}],
+  eyebrow: 'Contact',
+  title: 'Parlons de votre projet',
+  lead: 'Devis, partenariat, question ou candidature : notre équipe vous répond sous 48 h ouvrées.',
+} %}
+
+<section class="section !pt-0">
+  <div class="container-x">
+    {# Raccourcis de contact #}
+    <ul class="relative -mt-10 md:-mt-12 grid gap-4 sm:grid-cols-3">
+      {% for c in [
+        {icon: 'la-phone', label: 'Appelez-nous', value: contact_phone_display, href: 'tel:' ~ contact_phone, ext: false},
+        {icon: 'la-whatsapp', icon_set: 'lab', label: 'WhatsApp', value: 'Écrire un message', href: 'https://wa.me/' ~ whatsapp_number, ext: true},
+        {icon: 'la-envelope', label: 'E-mail', value: contact_email, href: 'mailto:' ~ contact_email, ext: false},
+      ] %}
+        <li class="card group p-5">
+          <div class="flex items-center gap-4">
+            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-700 transition group-hover:bg-brand-600 group-hover:text-white">
+              <i class="{{ c.icon_set ?? 'las' }} {{ c.icon }} text-2xl" aria-hidden="true"></i>
+            </span>
+            <span class="min-w-0">
+              <span class="block text-xs font-bold uppercase tracking-wider text-gray-500">{{ c.label }}</span>
+              <a href="{{ c.href }}" class="card-link block truncate font-bold text-gray-900" {% if c.ext %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ c.value }}</a>
+            </span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-12 grid gap-10 lg:grid-cols-12">
+      {# Formulaire #}
+      <div class="lg:col-span-8 scroll-mt-24" id="contact-form">
+        <div class="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-gray-900/5 md:p-10">
+          <h2 class="text-2xl font-extrabold text-gray-900">Envoyez-nous un message</h2>
+          <p class="mt-1 mb-8 text-sm text-gray-500">Les champs marqués <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only">d'un astérisque</span> sont obligatoires.</p>
+
+          {% for message in app.flashes('success') %}
+            <div role="status" class="mb-8 flex gap-4 rounded-2xl bg-brand-50 p-5 text-brand-900 ring-1 ring-brand-200">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-600 text-white"><i class="las la-check text-xl" aria-hidden="true"></i></span>
+              <p class="pt-1.5">{{ message }}</p>
+            </div>
+          {% endfor %}
+
+          {% if not form.vars.valid %}
+            <div role="alert" class="mb-8 rounded-2xl bg-red-50 p-5 text-sm text-red-800 ring-1 ring-red-200">
+              <p class="font-bold">Le message n'a pas pu être envoyé. Merci de corriger les champs signalés.</p>
+              {% for error in form.vars.errors %}<p class="mt-1">{{ error.message }}</p>{% endfor %}
+            </div>
+          {% endif %}
+
+          {{ form_start(form, {attr: {class: 'space-y-6', novalidate: 'novalidate', 'data-single-submit': ''}}) }}
+            <fieldset>
+              <legend class="form-label">Type de demande <span class="text-red-600" aria-hidden="true">*</span></legend>
+              {% set icons = {devis: 'la-file-invoice-dollar', information: 'la-comment-dots', partenariat: 'la-handshake', candidature: 'la-user-tie', autre: 'la-ellipsis-h'} %}
+              <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {% for choice in form.subjectType %}
+                  <div>
+                    {{ form_widget(choice, {attr: {class: 'choice-input sr-only'}}) }}
+                    <label for="{{ choice.vars.id }}" class="choice-card">
+                      <i class="las {{ icons[choice.vars.value] ?? 'la-envelope' }} text-xl text-brand-600" aria-hidden="true"></i>
+                      {{ choice.vars.label }}
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
+              {% if form.subjectType.vars.errors|length %}<p class="form-error">{% for e in form.subjectType.vars.errors %}{{ e.message }} {% endfor %}</p>{% endif %}
+            </fieldset>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              {{ forms.field(form.fullName) }}
+              {{ forms.field(form.email) }}
+            </div>
+            <div class="grid gap-5 md:grid-cols-2">
+              {{ forms.field(form.phone) }}
+              {{ forms.field(form.organization) }}
+            </div>
+            {{ forms.field(form.message) }}
+
+            {# Champ piège anti-spam, invisible #}
+            <div class="hp-field" aria-hidden="true">{{ form_row(form.website) }}</div>
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p class="text-xs text-gray-500 max-w-sm">
+                <i class="las la-lock" aria-hidden="true"></i> Vos données servent uniquement à répondre à votre demande et ne sont jamais transmises à des tiers.
+              </p>
+              <button type="submit" class="btn btn-primary sm:min-w-[220px]">
+                <span data-label>Envoyer le message</span> <i class="las la-paper-plane" aria-hidden="true"></i>
+              </button>
+            </div>
+          {{ form_end(form) }}
+        </div>
+      </div>
+
+      {# Informations #}
+      <aside class="lg:col-span-4 space-y-6">
+        <div class="rounded-3xl bg-gray-50 p-7 ring-1 ring-gray-900/5">
+          <h2 class="text-lg font-bold text-gray-900">Siège social</h2>
+          <p class="mt-3 flex gap-3 text-gray-700"><i class="las la-map-marker-alt mt-0.5 text-xl text-brand-600" aria-hidden="true"></i>142, av. FAGOP, Q. Kyeshero<br>Goma, Nord-Kivu, RDC</p>
+          <p class="mt-3 flex gap-3 text-gray-700"><i class="las la-clock mt-0.5 text-xl text-brand-600" aria-hidden="true"></i>Réponse sous 48 h ouvrées</p>
+        </div>
+        <div class="rounded-3xl bg-gradient-to-br from-brand-700 to-brand-900 p-7 text-white">
+          <h2 class="text-lg font-bold">Que préciser dans votre demande ?</h2>
+          <ul class="mt-4 space-y-2.5 text-sm text-brand-100">
+            <li class="flex gap-2"><i class="las la-check-circle text-lg text-accent" aria-hidden="true"></i>Le lieu du projet</li>
+            <li class="flex gap-2"><i class="las la-check-circle text-lg text-accent" aria-hidden="true"></i>Le type d'ouvrage ou d'étude</li>
+            <li class="flex gap-2"><i class="las la-check-circle text-lg text-accent" aria-hidden="true"></i>Les délais et le budget envisagés</li>
+            <li class="flex gap-2"><i class="las la-check-circle text-lg text-accent" aria-hidden="true"></i>Vos documents disponibles (plans, études)</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    {# Implantations #}
+    <div class="mt-20">
+      <div class="mb-8 reveal">
+        <p class="eyebrow mb-3">Implantations</p>
+        <h2 class="section-title">Où nous trouver</h2>
+      </div>
+      <div class="grid gap-6 lg:grid-cols-2">
+        {% for place in [
+          {city: 'Goma', img: 'images/goma.jpg', address: '142, av. FAGOP, Q. Kyeshero – Nord-Kivu', map: 'https://www.google.com/maps/search/?api=1&query=' ~ ('Avenue FAGOP Kyeshero Goma')|url_encode},
+          {city: 'Bukavu', img: 'images/bukavu.jpg', address: 'Bukavu – Sud-Kivu', map: 'https://www.google.com/maps/search/?api=1&query=' ~ ('Bukavu Sud-Kivu')|url_encode},
+        ] %}
+          <div class="card group reveal">
+            <div class="card-media aspect-[16/9]">
+              <img src="{{ place.img|imagine_filter('card') }}" alt="Ville de {{ place.city }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/20 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+                <h3 class="text-2xl font-extrabold">{{ place.city }}</h3>
+                <p class="opacity-90">{{ place.address }}</p>
+                <a href="{{ place.map }}" target="_blank" rel="noopener noreferrer" class="card-link mt-3 inline-flex items-center gap-1 text-sm font-bold text-accent">
+                  <i class="las la-map-marker-alt" aria-hidden="true"></i> Voir sur la carte<span class="sr-only"> ({{ place.city }}, nouvel onglet)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% macro field(f) %}
+  {% set invalid = f.vars.errors|length > 0 %}
+  <div>
+    <label for="{{ f.vars.id }}" class="form-label">{{ f.vars.label }}{% if f.vars.required %} <span class="text-red-600" aria-hidden="true">*</span>{% endif %}</label>
+    {# On garde les attributs définis dans ContactType (placeholder, maxlength…) #}
+    {% set attrs = f.vars.attr|merge({class: 'form-input', 'aria-invalid': invalid ? 'true' : 'false'}) %}
+    {% if invalid %}{% set attrs = attrs|merge({'aria-describedby': f.vars.id ~ '_error'}) %}{% endif %}
+    {{ form_widget(f, {attr: attrs}) }}
+    {% if invalid %}
+      <p class="form-error" id="{{ f.vars.id }}_error"><i class="las la-exclamation-circle" aria-hidden="true"></i> {% for e in f.vars.errors %}{{ e.message }} {% endfor %}</p>
+    {% endif %}
+  </div>
+{% endmacro %}

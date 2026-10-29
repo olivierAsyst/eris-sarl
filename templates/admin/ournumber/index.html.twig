@@ -1,0 +1,36 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Chiffres clés | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.numbers.new') }}" class="btn btn-primary btn-sm"><i class="las la-plus" aria-hidden="true"></i> Nouvelle série</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Chiffres clés', subtitle: 'La série la plus récente est affichée sur l’accueil', actions: actions} %}
+
+{% if ournumbers is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-chart-bar', text: 'Aucun chiffre pour le moment.', url: path('admin.numbers.new'), label: 'Saisir les chiffres'} %}
+{% else %}
+  <div class="space-y-4">
+    {% for n in ournumbers|sort((a, b) => b.id <=> a.id) %}
+      <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 {{ loop.first ? 'ring-brand-300' : 'ring-gray-900/5' }}">
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+          {% if loop.first %}
+            <span class="chip"><i class="las la-eye" aria-hidden="true"></i> Affichée sur le site</span>
+          {% else %}
+            <span class="chip bg-gray-100 text-gray-500">Ancienne série (non affichée)</span>
+          {% endif %}
+          <div class="ml-auto flex items-center gap-1">
+            <a href="{{ path('admin.numbers.edit', {id: n.id}) }}" class="btn btn-outline btn-sm"><i class="las la-pen" aria-hidden="true"></i> Modifier</a>
+            {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.numbers.delete', {id: n.id}), id: n.id, compact: true} %}
+          </div>
+        </div>
+        <dl class="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {% for label, value in {'Création': n.year, 'Projets': n.projects, 'Experts': n.experts, 'Partenaires': n.partner} %}
+            <div class="rounded-xl bg-gray-50 p-4">
+              <dt class="text-xs font-bold uppercase tracking-wider text-gray-500">{{ label }}</dt>
+              <dd class="mt-1 text-2xl font-extrabold {{ loop.parent.loop.first ? 'text-gray-900' : 'text-gray-400' }}">{{ value ?: '—' }}</dd>
+            </div>
+          {% endfor %}
+        </dl>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

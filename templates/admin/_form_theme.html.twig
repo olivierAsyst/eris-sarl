@@ -1,0 +1,101 @@
+{# Thème des formulaires de l'administration (champs, libellés, erreurs, aide, fichiers) #}
+{% extends 'form_div_layout.html.twig' %}
+
+{%- block form_row -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}{%- set widget_attr = {attr: {'aria-describedby': id ~ '_help'}} -%}{%- endif -%}
+    <div class="space-y-1.5">
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_label -%}
+    {%- if label is not same as(false) -%}
+        {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' block text-sm font-semibold text-gray-800')|trim}) -%}
+        {%- if label is empty -%}{%- set label = name|humanize -%}{%- endif -%}
+        <label{% if not compound %} for="{{ id }}"{% endif %}{% with {attr: label_attr} %}{{ block('attributes') }}{% endwith %}>
+            {{- label|trans(label_translation_parameters, translation_domain) -}}
+            {%- if required -%}<span class="ml-0.5 text-red-600" aria-hidden="true">*</span>{%- endif -%}
+        </label>
+    {%- endif -%}
+{%- endblock form_label -%}
+
+{%- block form_help -%}
+    {%- if help is not empty -%}
+        <p id="{{ id }}_help" class="text-xs text-gray-500">{{ help|trans(help_translation_parameters, translation_domain) }}</p>
+    {%- endif -%}
+{%- endblock form_help -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <ul class="space-y-0.5">
+            {%- for error in errors -%}
+                <li class="flex items-center gap-1 text-sm font-medium text-red-700"><i class="las la-exclamation-circle" aria-hidden="true"></i>{{ error.message }}</li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{%- block form_widget_simple -%}
+    {%- if type is not defined or type not in ['file', 'hidden', 'checkbox', 'radio'] -%}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-input')|trim}) -%}
+    {%- elseif type == 'file' -%}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full cursor-pointer rounded-xl border border-dashed border-gray-300 bg-gray-50 p-3 text-sm text-gray-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-brand-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700')|trim}) -%}
+    {%- endif -%}
+    {%- if errors|length > 0 -%}{%- set attr = attr|merge({'aria-invalid': 'true'}) -%}{%- endif -%}
+    {{- parent() -}}
+{%- endblock form_widget_simple -%}
+
+{%- block textarea_widget -%}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-input min-h-[8rem]')|trim}) -%}
+    {%- if errors|length > 0 -%}{%- set attr = attr|merge({'aria-invalid': 'true'}) -%}{%- endif -%}
+    {{- parent() -}}
+{%- endblock textarea_widget -%}
+
+{%- block choice_widget_collapsed -%}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-input')|trim}) -%}
+    {{- parent() -}}
+{%- endblock choice_widget_collapsed -%}
+
+{%- block checkbox_widget -%}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' h-4 w-4 rounded accent-brand-600')|trim}) -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}
+
+{# Champs d'upload VichUploader : fichier actuel + case « supprimer » + nouveau fichier #}
+{%- block vich_image_widget -%}
+    <div class="space-y-3">
+        {%- if image_uri -%}
+            <div class="flex items-center gap-4 rounded-xl bg-gray-50 p-3 ring-1 ring-gray-200">
+                <img src="{{ image_uri starts with 'http' ? image_uri : image_uri|trim('/', 'left')|imagine_filter('card') }}" alt="" class="h-16 w-24 rounded-lg object-cover">
+                <div class="text-xs text-gray-600">
+                    <p class="font-semibold text-gray-800">Image actuelle</p>
+                    <p>Choisissez un fichier ci-dessous pour la remplacer.</p>
+                    {%- if form.delete is defined -%}
+                        <label class="mt-1 inline-flex items-center gap-2 text-red-700">{{ form_widget(form.delete) }} Supprimer l'image</label>
+                    {%- endif -%}
+                </div>
+            </div>
+        {%- endif -%}
+        {{- form_widget(form.file) -}}
+        <p class="text-xs text-gray-500">JPG, PNG ou WebP. Les grandes photos sont réduites automatiquement.</p>
+    </div>
+{%- endblock vich_image_widget -%}
+
+{%- block vich_file_widget -%}
+    <div class="space-y-3">
+        {%- if download_uri -%}
+            <div class="flex items-center gap-3 rounded-xl bg-gray-50 p-3 text-xs ring-1 ring-gray-200">
+                <i class="las la-file text-2xl text-brand-600" aria-hidden="true"></i>
+                <a href="{{ asset_helper is same as(true) ? asset(download_uri) : download_uri }}" target="_blank" class="font-semibold text-brand-700 hover:underline">Fichier actuel</a>
+                {%- if form.delete is defined -%}
+                    <label class="ml-auto inline-flex items-center gap-2 text-red-700">{{ form_widget(form.delete) }} Supprimer</label>
+                {%- endif -%}
+            </div>
+        {%- endif -%}
+        {{- form_widget(form.file) -}}
+    </div>
+{%- endblock vich_file_widget -%}

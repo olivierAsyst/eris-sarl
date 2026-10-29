@@ -1,0 +1,25 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Équipe | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.member.create') }}" class="btn btn-primary btn-sm"><i class="las la-user-plus" aria-hidden="true"></i> Ajouter un membre</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Équipe', subtitle: members|length ~ ' membre(s) — les 4 premiers apparaissent sur l’accueil', actions: actions} %}
+
+{% if members is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-users', text: 'Aucun membre pour le moment.', url: path('admin.member.create'), label: 'Ajouter un membre'} %}
+{% else %}
+  <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    {% for m in members %}
+      <article class="flex flex-col items-center rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-900/5">
+        <img src="{{ media(m, 'image', 'avatar', 'images/profile.svg') }}" alt="" class="h-20 w-20 rounded-full bg-gray-100 object-cover ring-4 ring-brand-50" loading="lazy">
+        <h2 class="mt-3 font-bold text-gray-900">{{ m.fullName }}</h2>
+        <p class="text-sm text-brand-700">{{ m.fonction ?: '—' }}</p>
+        {% if loop.index <= 4 %}<span class="chip mt-2">Visible sur l'accueil</span>{% endif %}
+        <div class="mt-4 flex w-full items-center gap-1 border-t border-gray-100 pt-3">
+          <a href="{{ path('admin.member.edit', {id: m.id}) }}" class="btn btn-outline btn-sm flex-1"><i class="las la-pen" aria-hidden="true"></i> Modifier</a>
+          {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.member.delete', {id: m.id}), id: m.id, compact: true} %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

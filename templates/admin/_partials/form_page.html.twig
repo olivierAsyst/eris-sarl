@@ -1,0 +1,65 @@
+{#
+  Page d'ajout / de modification.
+  Paramètres : form, title, subtitle?, back_url, delete_url?, entity_id?, preview_url?, public_url?, submit_label?, tips? (liste de conseils)
+#}
+{% form_theme form 'admin/_form_theme.html.twig' %}
+{% include 'admin/_partials/page_header.html.twig' with {title: title, subtitle: subtitle|default(null), back_url: back_url} %}
+
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <div class="xl:col-span-2">
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 sm:p-8">
+      {{ form_start(form, {attr: {id: 'admin-form', novalidate: 'novalidate', 'data-single-submit': ''}}) }}
+        {% if not form.vars.valid %}
+          <div role="alert" class="mb-6 rounded-xl bg-red-50 p-4 text-sm font-semibold text-red-800 ring-1 ring-red-200">
+            <i class="las la-exclamation-triangle" aria-hidden="true"></i> Le formulaire contient des erreurs : vérifiez les champs signalés.
+            {{ form_errors(form) }}
+          </div>
+        {% endif %}
+        <div class="space-y-6">
+          {% for child in form %}
+            {% if 'hidden' in child.vars.block_prefixes %}{{ form_widget(child) }}{% else %}{{ form_row(child) }}{% endif %}
+          {% endfor %}
+        </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+
+  <aside class="space-y-6">
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 xl:sticky xl:top-24">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">Actions</h2>
+      <div class="mt-4 space-y-3">
+        <button type="submit" form="admin-form" class="btn btn-primary w-full">
+          <i class="las la-save" aria-hidden="true"></i> <span data-label>{{ submit_label|default('Enregistrer') }}</span>
+        </button>
+        <a href="{{ back_url }}" class="btn btn-outline btn-sm w-full">Annuler</a>
+        {% if public_url is defined and public_url %}
+          <a href="{{ public_url }}" target="_blank" class="btn btn-sm w-full text-gray-600 hover:bg-gray-100"><i class="las la-external-link-alt" aria-hidden="true"></i> Voir sur le site</a>
+        {% endif %}
+        {% if delete_url is defined and delete_url %}
+          <div class="border-t border-gray-100 pt-3">
+            {% include 'admin/_partials/delete_button.html.twig' with {url: delete_url, id: entity_id} %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div data-preview class="mt-6" {% if not (preview_url is defined and preview_url) %}hidden{% endif %}>
+        <h2 class="mb-3 text-sm font-bold uppercase tracking-wider text-gray-500">Aperçu</h2>
+        {% if preview_url is defined and preview_url %}<img src="{{ preview_url }}" alt="" class="w-full rounded-xl object-cover">{% endif %}
+      </div>
+
+      {% if tips is defined and tips %}
+        <div class="mt-6 rounded-xl bg-brand-50 p-4 text-sm text-brand-900">
+          <p class="mb-2 font-bold"><i class="las la-lightbulb" aria-hidden="true"></i> Conseils</p>
+          <ul class="list-disc space-y-1 pl-5">{% for t in tips %}<li>{{ t }}</li>{% endfor %}</ul>
+        </div>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+
+{# Barre d'enregistrement toujours visible sur mobile / tablette #}
+<div class="fixed inset-x-0 bottom-0 z-30 flex gap-3 border-t border-gray-200 bg-white/95 p-3 backdrop-blur xl:hidden lg:left-72">
+  <a href="{{ back_url }}" class="btn btn-outline btn-sm flex-1">Annuler</a>
+  <button type="submit" form="admin-form" class="btn btn-primary btn-sm flex-[2]"><i class="las la-save" aria-hidden="true"></i> {{ submit_label|default('Enregistrer') }}</button>
+</div>
+<div class="h-16 xl:hidden" aria-hidden="true"></div>

@@ -1,0 +1,54 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Messages reçus | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/page_header.html.twig' with {
+  title: 'Messages reçus',
+  subtitle: 'Copie de chaque demande envoyée par le formulaire de contact. Réception par e-mail : ' ~ contact_email,
+} %}
+
+{% if messages is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-inbox', text: 'Aucun message pour le moment.'} %}
+{% else %}
+  <div class="space-y-3">
+    {% for m in messages %}
+      <details id="message-{{ m.id }}" class="group rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5 open:ring-brand-300" {% if loop.first %}open{% endif %}>
+        <summary class="flex cursor-pointer list-none items-center gap-4 p-5 [&::-webkit-details-marker]:hidden">
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 font-bold text-brand-700">{{ m.fullName|first|upper }}</span>
+          <span class="min-w-0 flex-1">
+            <span class="flex flex-wrap items-center gap-2">
+              <span class="font-semibold text-gray-900">{{ m.fullName }}</span>
+              <span class="chip">{{ m.subjectLabel }}</span>
+              {% if not m.mailSent %}<span class="chip bg-red-50 text-red-700"><i class="las la-exclamation-triangle" aria-hidden="true"></i> E-mail non envoyé</span>{% endif %}
+            </span>
+            <span class="mt-0.5 block truncate text-sm text-gray-500">{{ m.message|excerpt(120) }}</span>
+          </span>
+          <span class="hidden shrink-0 text-xs text-gray-400 sm:block">{{ m.createdAt|date('d/m/Y à H:i') }}</span>
+          <i class="las la-angle-down text-gray-400 transition group-open:rotate-180" aria-hidden="true"></i>
+        </summary>
+        <div class="border-t border-gray-100 p-5">
+          <dl class="grid gap-3 text-sm sm:grid-cols-3">
+            <div><dt class="text-xs font-bold uppercase tracking-wider text-gray-500">E-mail</dt><dd class="mt-0.5 break-all"><a class="text-brand-700 hover:underline" href="mailto:{{ m.email }}">{{ m.email }}</a></dd></div>
+            <div><dt class="text-xs font-bold uppercase tracking-wider text-gray-500">Téléphone</dt><dd class="mt-0.5">{% if m.phone %}<a class="text-brand-700 hover:underline" href="tel:{{ m.phone|replace({' ': ''}) }}">{{ m.phone }}</a>{% else %}—{% endif %}</dd></div>
+            <div><dt class="text-xs font-bold uppercase tracking-wider text-gray-500">Organisation</dt><dd class="mt-0.5">{{ m.organization ?: '—' }}</dd></div>
+          </dl>
+          <div class="mt-4 whitespace-pre-line rounded-xl bg-gray-50 p-4 leading-relaxed text-gray-800">{{ m.message }}</div>
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            <a href="mailto:{{ m.email }}?subject={{ ('Re : ' ~ m.subjectLabel ~ ' – ERIS SARL')|url_encode }}" class="btn btn-primary btn-sm"><i class="las la-reply" aria-hidden="true"></i> Répondre par e-mail</a>
+            {% if m.phone %}
+              <a href="https://wa.me/{{ m.phone|replace({' ': '', '+': '', '-': '', '.': ''}) }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm"><i class="lab la-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+            {% endif %}
+            <span class="ml-auto w-auto">
+              <form method="post" action="{{ path('admin.messages.delete', {id: m.id}) }}" data-confirm="Supprimer ce message ?">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ m.id) }}">
+                <button class="btn btn-sm text-red-700 hover:bg-red-50"><i class="las la-trash-alt" aria-hidden="true"></i> Supprimer</button>
+              </form>
+            </span>
+          </div>
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

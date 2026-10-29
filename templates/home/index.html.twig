@@ -1,0 +1,238 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% set hero_poster = media(realisations|first ?: null, 'image', 'hero', 'images/goma.jpg') %}
+
+{% block preload %}
+  {# Image principale chargée en priorité (améliore le LCP de PageSpeed) #}
+  <link rel="preload" as="image" href="{{ hero_poster }}" fetchpriority="high">
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{{ {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': 'ERIS SARL',
+  'url': app.request.schemeAndHttpHost ~ '/',
+  'inLanguage': 'fr',
+  'publisher': {'@id': app.request.schemeAndHttpHost ~ '/#organisation'}
+}|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+</script>
+{% endblock %}
+
+{% block body %}
+
+{# ===================== HÉRO ===================== #}
+<section class="relative isolate overflow-hidden bg-brand-950" aria-labelledby="hero-title">
+  {# L'image (poster) s'affiche immédiatement ; la vidéo est chargée ensuite par public/js/app.js,
+     sauf si le visiteur économise ses données ou limite les animations. #}
+  <img src="{{ hero_poster }}" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover" fetchpriority="high" decoding="async">
+  {% if video and video.videoUrl %}
+    <video id="hero-video" class="absolute inset-0 -z-10 h-full w-full object-cover"
+           muted loop playsinline autoplay preload="none" poster="{{ hero_poster }}"
+           data-src="{{ vich_uploader_asset(video, 'video') }}" aria-hidden="true"></video>
+  {% endif %}
+  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-950 via-brand-950/80 to-brand-950/20"></div>
+  <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-brand-950 to-transparent"></div>
+
+  <div class="container-x flex min-h-[min(calc(100svh-72px),860px)] flex-col justify-center py-20 lg:py-24">
+    <div class="max-w-3xl">
+      <p class="chip chip-light mb-6 reveal"><span class="h-2 w-2 rounded-full bg-accent"></span> Bureau d'études &amp; entreprise de construction – Goma, RDC</p>
+      <h1 id="hero-title" class="reveal text-[2.6rem] leading-[1.05] sm:text-6xl lg:text-7xl font-extrabold text-white" style="--d:80ms">
+        Des infrastructures <span class="text-accent">durables</span> pour l'Est de la RDC
+      </h1>
+      <p class="reveal mt-6 max-w-2xl text-lg md:text-xl leading-relaxed text-brand-100/90" style="--d:160ms">
+        ERIS SARL conçoit, réalise et suit vos projets de génie civil, d'eau potable, d'assainissement et d'aménagements hydro-agricoles — de l'étude jusqu'à la mise en service.
+      </p>
+      <div class="reveal mt-9 flex flex-wrap gap-3" style="--d:240ms">
+        <a href="{{ path('app_contact', {sujet: 'devis'}) }}" class="btn btn-accent">Demander un devis <i class="las la-arrow-right" aria-hidden="true"></i></a>
+        <a href="{{ path('app_realisation_front') }}" class="btn btn-ghost-light">Voir nos réalisations</a>
+      </div>
+    </div>
+
+    {# Chiffres clés #}
+    <dl class="reveal mt-14 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4" style="--d:320ms">
+      {% set stats = [
+        {label: 'Création', value: chiffre.year|default('2021'), count: false, prefix: ''},
+        {label: 'Projets réalisés', value: chiffre.projects|default(0), count: true, prefix: ''},
+        {label: 'Experts techniques', value: chiffre.experts|default(0), count: true, prefix: '+'},
+        {label: 'Partenaires', value: chiffre.partner|default(0), count: true, prefix: '+'},
+      ] %}
+      {% for s in stats %}
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+          <dt class="text-xs font-semibold uppercase tracking-wider text-brand-200/80">{{ s.label }}</dt>
+          <dd class="mt-1 text-3xl font-extrabold text-white"
+              {% if s.count and s.value matches '/^\\d+$/' %}data-count="{{ s.value }}" data-prefix="{{ s.prefix }}"{% endif %}>{{ s.prefix }}{{ s.value }}</dd>
+        </div>
+      {% endfor %}
+    </dl>
+  </div>
+</section>
+
+{# ===================== SERVICES ===================== #}
+{% if services is not empty %}
+<section class="section bg-white" aria-labelledby="services-title">
+  <div class="container-x">
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-12">
+      <div class="max-w-2xl reveal">
+        <p class="eyebrow mb-3">Nos domaines d'expertise</p>
+        <h2 id="services-title" class="section-title">Des services adaptés à chaque enjeu technique</h2>
+      </div>
+      <a href="{{ path('app_services_front') }}" class="link-arrow reveal">Tous nos services <i class="las la-arrow-right" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for service in services %}
+        {% include 'services_front/_card.html.twig' with {service: service, index: loop.index} only %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===================== DÉMARCHE ===================== #}
+<section class="section bg-brand-50/60" aria-labelledby="process-title">
+  <div class="container-x grid gap-12 lg:grid-cols-12 lg:items-center">
+    <div class="lg:col-span-5 reveal">
+      <p class="eyebrow mb-3">Notre démarche</p>
+      <h2 id="process-title" class="section-title">De l'étude à la mise en service, un seul interlocuteur</h2>
+      <p class="section-lead mt-5">
+        ERIS SARL combine expertise technique et connaissance du terrain pour livrer des ouvrages fiables, adaptés aux contraintes locales et pensés pour durer.
+      </p>
+      <a href="{{ path('app_about') }}" class="btn btn-outline mt-8">Qui sommes-nous ?</a>
+    </div>
+    <ol class="lg:col-span-7 grid gap-4 sm:grid-cols-2">
+      {% for step in [
+        {icon: 'la-search-location', title: 'Diagnostic & études', text: 'Visite de terrain, relevés topographiques, études hydrologiques et techniques.'},
+        {icon: 'la-drafting-compass', title: 'Conception', text: 'Plans d’exécution, dimensionnement, métrés et devis détaillés.'},
+        {icon: 'la-hard-hat', title: 'Réalisation', text: 'Exécution et direction des travaux, contrôle qualité des matériaux.'},
+        {icon: 'la-clipboard-check', title: 'Suivi & transfert', text: 'Réception des ouvrages, formation des usagers et suivi dans le temps.'},
+      ] %}
+        <li class="reveal rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5" style="--d:{{ loop.index0 * 80 }}ms">
+          <div class="flex items-center justify-between">
+            <span class="grid h-12 w-12 place-items-center rounded-xl bg-brand-600 text-white"><i class="las {{ step.icon }} text-2xl" aria-hidden="true"></i></span>
+            <span class="text-4xl font-extrabold text-brand-100" aria-hidden="true">0{{ loop.index }}</span>
+          </div>
+          <h3 class="mt-5 text-lg font-bold text-gray-900">{{ step.title }}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-gray-600">{{ step.text }}</p>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+{# ===================== RÉALISATIONS ===================== #}
+{% if realisations is not empty %}
+<section class="section" aria-labelledby="realisations-title">
+  <div class="container-x">
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-12">
+      <div class="max-w-2xl reveal">
+        <p class="eyebrow mb-3">Sur le terrain</p>
+        <h2 id="realisations-title" class="section-title">Nos dernières réalisations</h2>
+      </div>
+      <a href="{{ path('app_realisation_front') }}" class="link-arrow reveal">Toutes les réalisations <i class="las la-arrow-right" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      {% for r in realisations %}
+        {% set url = path('app_realisation_show', {id: r.id, slug: r.slug}) %}
+        <article class="card reveal group {{ loop.first ? 'lg:row-span-2' : '' }}" style="--d:{{ loop.index0 * 90 }}ms">
+          <div class="card-media {{ loop.first ? 'aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[520px]' : 'aspect-[16/9]' }}">
+            {% if r.imageUrl %}
+              <img src="{{ media(r, 'image', loop.first ? 'detail' : 'card') }}" alt="" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+            {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-950/30 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
+              {% if r.service %}<span class="chip chip-light mb-3">{{ r.service.name }}</span>{% endif %}
+              <h3 class="text-xl md:text-2xl font-extrabold text-white">
+                <a href="{{ url }}" class="card-link">{{ r.name }}</a>
+              </h3>
+              {% if loop.first %}<p class="mt-2 hidden md:block text-brand-100/90 max-w-xl">{{ r.description|excerpt(160) }}</p>{% endif %}
+              <span class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-accent">Voir le projet <i class="las la-arrow-right" aria-hidden="true"></i></span>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===================== ÉQUIPE ===================== #}
+{% if members is not empty %}
+<section class="section bg-gray-50" aria-labelledby="team-title">
+  <div class="container-x">
+    <div class="mx-auto max-w-2xl text-center mb-12 reveal">
+      <p class="eyebrow mb-3 justify-center">L'équipe</p>
+      <h2 id="team-title" class="section-title">Des experts engagés à vos côtés</h2>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {% for member in members %}
+        <div class="reveal" style="--d:{{ loop.index0 * 80 }}ms">{% include 'front_member/_card.html.twig' with {member: member} only %}</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-10">
+      <a href="{{ path('app_front_member') }}" class="btn btn-outline">Découvrir toute l'équipe</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===================== GALERIE (aperçu) ===================== #}
+{% if images is not empty %}
+<section class="section" aria-labelledby="gallery-title">
+  <div class="container-x">
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-10">
+      <div class="max-w-2xl reveal">
+        <p class="eyebrow mb-3">Projets en images</p>
+        <h2 id="gallery-title" class="section-title">Galerie photo</h2>
+      </div>
+      <a href="{{ path('app_front_image') }}" class="link-arrow reveal">Voir toute la galerie <i class="las la-arrow-right" aria-hidden="true"></i></a>
+    </div>
+
+    <ul class="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-3 md:gap-4 md:h-[480px]">
+      {% for image in images %}
+        {% set tile = loop.first ? 'col-span-2 row-span-2 aspect-square' : (loop.index == 4 ? 'col-span-2 aspect-[2/1]' : 'aspect-square') %}
+        <li class="reveal relative overflow-hidden rounded-2xl {{ tile }} md:aspect-auto" style="--d:{{ loop.index0 * 70 }}ms">
+          <img src="{{ media(image, 'image', loop.first ? 'gallery_large' : 'gallery_thumb') }}" alt="{{ image.description ?: image.lieu }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
+          <span class="absolute bottom-3 left-3 chip chip-light"><i class="las la-map-marker" aria-hidden="true"></i>{{ image.lieu }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+{# ===================== PARTENAIRES ===================== #}
+{% if partners is not empty %}
+<section class="py-16 border-y border-gray-100 bg-white" aria-labelledby="partners-title">
+  <div class="container-x">
+    <h2 id="partners-title" class="text-center text-sm font-bold uppercase tracking-[.2em] text-gray-500 mb-10">Ils nous font confiance</h2>
+    <ul class="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+      {% for partner in partners %}
+        <li class="logo-tile">
+          {% set inner %}
+            {% if partner.logo %}
+              <img src="{{ media(partner, 'image', 'logo') }}" alt="{{ partner.name }}" loading="lazy" decoding="async" class="h-12 md:h-14 w-auto max-w-[160px] object-contain">
+            {% else %}
+              <span class="text-lg font-bold text-gray-500">{{ partner.name }}</span>
+            {% endif %}
+          {% endset %}
+          {% if partner.links %}
+            <a href="{{ partner.links }}" target="_blank" rel="noopener noreferrer" title="{{ partner.name }} (nouvel onglet)" class="block">{{ inner }}</a>
+          {% else %}
+            <span class="block" title="{{ partner.name }}">{{ inner }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+{# ===================== PARCOURS DE CONTACT ===================== #}
+{% include '_partials/_contact_paths.html.twig' %}
+
+{% endblock %}

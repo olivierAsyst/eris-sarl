@@ -1,0 +1,13 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Ajouter une photo | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Ajouter une photo',
+  back_url: path('admin.galery.index'),
+  submit_label: 'Ajouter',
+  tips: ['Indiquez le lieu de la prise de vue (ville, site).', 'La description sert de texte alternatif pour l\'accessibilité et Google.'],
+} %}
+{% endblock %}

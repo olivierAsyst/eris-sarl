@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: home_video.name ?: 'Vidéo d’accueil',
+  back_url: path('admin.video.index'),
+  edit_url: path('admin.video.edit', {id: home_video.id}),
+  delete_url: path('admin.video.delete', {id: home_video.id}),
+  entity_id: home_video.id,
+  image_url: null,
+  public_url: path('app_home'),
+  fields: [{label: 'Titre', value: home_video.name}, {label: 'Fichier', value: home_video.videoUrl}],
+} %}
+{% endblock %}

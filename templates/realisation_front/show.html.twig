@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ realisation.name }}{% endblock %}
+{% block meta_description %}{{ (realisation.description ?: realisation.name ~ ' – projet réalisé par ERIS SARL')|meta_description }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_image %}{{ realisation.imageUrl ? absolute_url(media(realisation, 'image', 'og_image')) : parent() }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{{ {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  'name': realisation.name,
+  'description': realisation.description|excerpt(500),
+  'url': url('app_realisation_show', {id: realisation.id, slug: realisation.slug}),
+  'image': realisation.imageUrl ? absolute_url(media(realisation, 'image', 'og_image')) : null,
+  'creator': {'@id': app.request.schemeAndHttpHost ~ '/#organisation'},
+  'about': realisation.service ? realisation.service.name : null
+}|filter(v => v is not null)|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+</script>
+{% endblock %}
+
+{% block body %}
+{% set crumbs = [{label: 'Réalisations', url: path('app_realisation_front')}] %}
+{% if realisation.service %}
+  {% set crumbs = crumbs|merge([{label: realisation.service.name, url: path('app_realisation_front', {service: realisation.service.slug})}]) %}
+{% endif %}
+
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: crumbs|merge([{label: realisation.name}]),
+  eyebrow: realisation.service ? realisation.service.name : 'Réalisation',
+  title: realisation.name,
+  image: realisation.imageUrl ? media(realisation, 'image', 'hero') : null,
+} %}
+
+<article class="section !pt-0">
+  <div class="container-x">
+    {% if realisation.imageUrl %}
+      <img src="{{ media(realisation, 'image', 'detail') }}" alt="{{ realisation.name }}" width="1200" height="750" decoding="async"
+           class="relative -mt-10 md:-mt-16 mb-12 w-full max-h-[600px] rounded-3xl object-cover shadow-2xl ring-4 ring-white">
+    {% else %}
+      <div class="mb-12"></div>
+    {% endif %}
+
+    <div class="grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-8">
+        <h2 class="text-2xl font-extrabold text-gray-900 mb-4">Le projet</h2>
+        <div class="prose-text">{{ realisation.description|default('Description du projet à venir.') }}</div>
+      </div>
+
+      <aside class="lg:col-span-4 space-y-6">
+        <dl class="rounded-3xl bg-gray-50 p-6 ring-1 ring-gray-900/5 space-y-4">
+          <div>
+            <dt class="text-xs font-bold uppercase tracking-wider text-gray-500">Domaine</dt>
+            <dd class="mt-1 font-semibold text-gray-900">
+              {% if realisation.service %}
+                <a href="{{ path('app_service_show', {slug: realisation.service.slug}) }}" class="text-brand-700 hover:underline">{{ realisation.service.name }}</a>
+              {% else %}—{% endif %}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-xs font-bold uppercase tracking-wider text-gray-500">Réalisé par</dt>
+            <dd class="mt-1 font-semibold text-gray-900">ERIS SARL</dd>
+          </div>
+        </dl>
+
+        <div class="rounded-3xl bg-gradient-to-br from-brand-700 to-brand-900 p-7 text-white shadow-xl">
+          <h2 class="text-xl font-bold">Un projet similaire ?</h2>
+          <p class="mt-2 text-brand-100/90">Parlons-en : nous étudions votre besoin et vous proposons une solution adaptée.</p>
+          <a href="{{ path('app_contact', {sujet: 'devis', objet: realisation.name}) }}#contact-form" class="btn btn-accent mt-6 w-full">Demander un devis</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="mt-12 flex flex-wrap gap-x-8 gap-y-3">
+      <a href="{{ path('app_realisation_front') }}" class="link-arrow"><i class="las la-arrow-left" aria-hidden="true"></i> Toutes les réalisations</a>
+      {% if realisation.service %}
+        <a href="{{ path('app_service_show', {slug: realisation.service.slug}) }}" class="link-arrow">Voir le service {{ realisation.service.name }} <i class="las la-arrow-right" aria-hidden="true"></i></a>
+      {% endif %}
+    </div>
+  </div>
+</article>
+
+{% if related is not empty %}
+<section class="section bg-gray-50" aria-labelledby="related-title">
+  <div class="container-x">
+    <h2 id="related-title" class="section-title mb-10">Autres projets</h2>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for r in related %}
+        {% include 'realisation_front/_card.html.twig' with {realisation: r} only %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

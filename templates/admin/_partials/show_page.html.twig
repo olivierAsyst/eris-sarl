@@ -1,0 +1,36 @@
+{#
+  Page de détail.
+  Paramètres : title, back_url, edit_url, delete_url, entity_id, image_url?, public_url?,
+               fields : [{label, value, type: text|long|link}]
+#}
+{% set actions %}
+  {% if public_url is defined and public_url %}<a href="{{ public_url }}" target="_blank" class="btn btn-outline btn-sm"><i class="las la-external-link-alt" aria-hidden="true"></i> Voir sur le site</a>{% endif %}
+  <a href="{{ edit_url }}" class="btn btn-primary btn-sm"><i class="las la-pen" aria-hidden="true"></i> Modifier</a>
+{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: title, back_url: back_url, actions: actions} %}
+
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <div class="rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5 xl:col-span-2">
+    <dl class="divide-y divide-gray-100">
+      {% for f in fields %}
+        <div class="grid gap-1 px-6 py-4 sm:grid-cols-3 sm:gap-4">
+          <dt class="text-sm font-semibold text-gray-500">{{ f.label }}</dt>
+          <dd class="text-gray-900 sm:col-span-2">
+            {% if f.value is empty %}<span class="text-gray-400">—</span>
+            {% elseif f.type|default('text') == 'link' %}<a href="{{ f.value }}" target="_blank" rel="noopener" class="break-all text-brand-700 hover:underline">{{ f.value }}</a>
+            {% elseif f.type|default('text') == 'long' %}<div class="whitespace-pre-line leading-relaxed">{{ f.value }}</div>
+            {% else %}{{ f.value }}{% endif %}
+          </dd>
+        </div>
+      {% endfor %}
+    </dl>
+  </div>
+  <aside class="space-y-6">
+    {% if image_url is defined and image_url %}
+      <div class="overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-gray-900/5"><img src="{{ image_url }}" alt="" class="w-full rounded-xl object-cover"></div>
+    {% endif %}
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+      {% include 'admin/_partials/delete_button.html.twig' with {url: delete_url, id: entity_id} %}
+    </div>
+  </aside>
+</div>

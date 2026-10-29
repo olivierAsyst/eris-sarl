@@ -1,0 +1,103 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Tableau de bord | Admin{% endblock %}
+
+{% block in_body %}
+{% set hour = 'now'|date('G') %}
+{% include 'admin/_partials/page_header.html.twig' with {
+  title: (hour < 18 ? 'Bonjour' : 'Bonsoir') ~ ' 👋',
+  subtitle: 'Voici l’état du site ERIS SARL au ' ~ 'now'|date('d/m/Y'),
+} %}
+
+{# Points d'attention #}
+{% set alerts = [] %}
+{% if unsent > 0 %}{% set alerts = alerts|merge([{icon: 'la-envelope', text: unsent ~ ' message(s) reçu(s) dont l’e-mail de notification n’est pas parti : vérifiez la messagerie.', url: path('admin.messages.index'), cta: 'Voir les messages'}]) %}{% endif %}
+{% if orphans > 0 %}{% set alerts = alerts|merge([{icon: 'la-link', text: orphans ~ ' réalisation(s) ne sont reliées à aucun service.', url: path('admin.realisation.index'), cta: 'Les relier'}]) %}{% endif %}
+{% if no_image > 0 %}{% set alerts = alerts|merge([{icon: 'la-image', text: no_image ~ ' réalisation(s) sans image.', url: path('admin.realisation.index'), cta: 'Compléter'}]) %}{% endif %}
+{% if counts.videos == 0 %}{% set alerts = alerts|merge([{icon: 'la-film', text: 'Aucune vidéo d’accueil : une photo est affichée à la place.', url: path('admin.video.new'), cta: 'Ajouter'}]) %}{% endif %}
+
+{% if alerts is not empty %}
+  <div class="mb-8 space-y-3">
+    {% for a in alerts %}
+      <div class="flex flex-col gap-3 rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-200 sm:flex-row sm:items-center">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700"><i class="las {{ a.icon }} text-xl" aria-hidden="true"></i></span>
+        <p class="flex-1 text-sm font-medium text-amber-900">{{ a.text }}</p>
+        <a href="{{ a.url }}" class="btn btn-sm bg-white text-amber-800 ring-1 ring-amber-200 hover:bg-amber-100">{{ a.cta }}</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{# Statistiques #}
+{% set tiles = [
+  {label: 'Messages reçus', value: counts.messages, icon: 'la-inbox', url: path('admin.messages.index'), color: 'bg-brand-600'},
+  {label: 'Services', value: counts.services, icon: 'la-tools', url: path('admin.services.index'), color: 'bg-emerald-500'},
+  {label: 'Réalisations', value: counts.realisations, icon: 'la-hard-hat', url: path('admin.realisation.index'), color: 'bg-lime-500'},
+  {label: 'Photos', value: counts.galerie, icon: 'la-images', url: path('admin.galery.index'), color: 'bg-teal-500'},
+  {label: 'Membres', value: counts.membres, icon: 'la-users', url: path('admin.member.index'), color: 'bg-cyan-600'},
+  {label: 'Partenaires', value: counts.partenaires, icon: 'la-handshake', url: path('admin.partner.index'), color: 'bg-green-700'},
+] %}
+<div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+  {% for t in tiles %}
+    <a href="{{ t.url }}" class="group rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5 transition hover:-translate-y-0.5 hover:shadow-lg">
+      <span class="grid h-11 w-11 place-items-center rounded-xl {{ t.color }} text-white"><i class="las {{ t.icon }} text-2xl" aria-hidden="true"></i></span>
+      <p class="mt-4 text-3xl font-extrabold text-gray-900">{{ t.value }}</p>
+      <p class="text-sm font-medium text-gray-500 group-hover:text-brand-700">{{ t.label }}</p>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
+  {# Derniers messages #}
+  <section class="rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5 xl:col-span-2" aria-labelledby="last-messages">
+    <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+      <h2 id="last-messages" class="font-bold text-gray-900">Derniers messages</h2>
+      <a href="{{ path('admin.messages.index') }}" class="link-arrow text-sm">Tout voir <i class="las la-arrow-right" aria-hidden="true"></i></a>
+    </div>
+    {% if latest_messages is empty %}
+      <p class="px-6 py-10 text-center text-sm text-gray-500">Aucun message pour le moment.</p>
+    {% else %}
+      <ul class="divide-y divide-gray-100">
+        {% for m in latest_messages %}
+          <li>
+            <a href="{{ path('admin.messages.index') }}#message-{{ m.id }}" class="flex items-start gap-4 px-6 py-4 hover:bg-gray-50">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-50 font-bold text-brand-700">{{ m.fullName|first|upper }}</span>
+              <span class="min-w-0 flex-1">
+                <span class="flex flex-wrap items-center gap-2">
+                  <span class="font-semibold text-gray-900">{{ m.fullName }}</span>
+                  <span class="chip">{{ m.subjectLabel }}</span>
+                </span>
+                <span class="mt-0.5 block truncate text-sm text-gray-500">{{ m.message|excerpt(110) }}</span>
+              </span>
+              <span class="shrink-0 text-xs text-gray-400">{{ m.createdAt|date('d/m H:i') }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+
+  {# Accès rapides #}
+  <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5" aria-labelledby="quick-actions">
+    <h2 id="quick-actions" class="font-bold text-gray-900">Actions rapides</h2>
+    <div class="mt-4 grid gap-2">
+      {% for q in [
+        {label: 'Ajouter une réalisation', icon: 'la-hard-hat', url: path('admin.realisation.new')},
+        {label: 'Ajouter une photo', icon: 'la-camera', url: path('admin.galery.create')},
+        {label: 'Ajouter un service', icon: 'la-tools', url: path('admin.services.create')},
+        {label: 'Ajouter un membre', icon: 'la-user-plus', url: path('admin.member.create')},
+        {label: 'Mettre à jour les chiffres', icon: 'la-chart-bar', url: path('admin.numbers.index')},
+      ] %}
+        <a href="{{ q.url }}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-700 ring-1 ring-gray-100 hover:bg-brand-50 hover:text-brand-800 hover:ring-brand-200">
+          <i class="las {{ q.icon }} text-xl text-brand-600" aria-hidden="true"></i> {{ q.label }}
+          <i class="las la-plus ml-auto text-gray-300 group-hover:text-brand-600" aria-hidden="true"></i>
+        </a>
+      {% endfor %}
+    </div>
+    <div class="mt-6 rounded-xl bg-gray-50 p-4 text-xs text-gray-600">
+      <p class="font-semibold text-gray-800">Adresse de réception du formulaire</p>
+      <p class="mt-1 break-all">{{ contact_email }}</p>
+    </div>
+  </section>
+</div>
+{% endblock %}

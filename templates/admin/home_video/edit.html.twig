@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ (home_video.name ?: 'Vidéo d’accueil'),
+  back_url: path('admin.video.index'),
+  delete_url: path('admin.video.delete', {id: home_video.id}),
+  entity_id: home_video.id,
+  preview_url: null,
+  public_url: path('app_home'),
+  tips: ['Seule la vidéo la plus récente est utilisée sur l\'accueil.', 'Format MP4 (H.264), sans son, 15 à 30 secondes, idéalement moins de 5 Mo.'],
+} %}
+{% endblock %}

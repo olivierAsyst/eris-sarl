@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ ('Chiffres clés'),
+  back_url: path('admin.numbers.index'),
+  delete_url: path('admin.numbers.delete', {id: ournumber.id}),
+  entity_id: ournumber.id,
+  preview_url: null,
+  public_url: path('app_home'),
+  tips: ['Seule la série la plus récente est affichée sur l\'accueil.', 'Saisissez uniquement des nombres (ex. 35) : ils sont animés sur le site.'],
+} %}
+{% endblock %}

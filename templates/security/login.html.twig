@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion administration{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block floating %}{% endblock %}
+
+{% block body %}
+<div class="grid min-h-screen lg:grid-cols-2">
+  {# Visuel #}
+  <div class="page-hero hidden lg:flex lg:flex-col lg:justify-between p-12">
+    <a href="{{ path('app_home') }}" class="relative inline-flex w-fit rounded-xl bg-white px-3 py-2">
+      <img src="{{ 'images/eris-logos.png'|imagine_filter('logo') }}" alt="ERIS SARL" class="h-9 w-auto">
+    </a>
+    <div class="relative max-w-md">
+      <p class="eyebrow eyebrow-light mb-4">Espace d'administration</p>
+      <h1 class="text-4xl font-extrabold leading-tight text-white">Gérez le contenu du site ERIS SARL</h1>
+      <p class="mt-4 text-brand-100/90">Services, réalisations, galerie, équipe et messages reçus : tout se met à jour depuis cet espace.</p>
+    </div>
+    <p class="relative text-xs text-brand-200/70">&copy; {{ 'now'|date('Y') }} ERIS SARL</p>
+  </div>
+
+  {# Formulaire #}
+  <div class="flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div class="w-full max-w-md">
+      <a href="{{ path('app_home') }}" class="mb-8 inline-flex items-center gap-1 text-sm font-semibold text-gray-500 hover:text-brand-700">
+        <i class="las la-arrow-left" aria-hidden="true"></i> Retour au site
+      </a>
+      <div class="rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-900/5 sm:p-10">
+        <span class="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-700"><i class="las la-lock text-2xl" aria-hidden="true"></i></span>
+        <h2 class="mt-5 text-2xl font-extrabold text-gray-900">Connexion</h2>
+        <p class="mt-1 text-sm text-gray-500">Réservé aux administrateurs du site.</p>
+
+        {% if error %}
+          <div role="alert" class="mt-6 flex items-center gap-3 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200">
+            <i class="las la-exclamation-circle text-xl" aria-hidden="true"></i>
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+          </div>
+        {% endif %}
+
+        <form method="post" class="mt-6 space-y-5">
+          <div>
+            <label for="inputEmail" class="form-label">Adresse e-mail</label>
+            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-input" autocomplete="email" required autofocus placeholder="vous@eris-sarl.com">
+          </div>
+          <div>
+            <label for="inputPassword" class="form-label">Mot de passe</label>
+            <div class="relative">
+              <input type="password" name="password" id="inputPassword" class="form-input pr-12" autocomplete="current-password" required>
+              <button type="button" class="absolute inset-y-0 right-0 grid w-12 place-items-center text-gray-400 hover:text-gray-700" aria-label="Afficher le mot de passe"
+                      onclick="var i=document.getElementById('inputPassword');var s=i.type==='password';i.type=s?'text':'password';this.setAttribute('aria-label',s?'Masquer le mot de passe':'Afficher le mot de passe');this.firstElementChild.className='las '+(s?'la-eye-slash':'la-eye')+' text-xl'">
+                <i class="las la-eye text-xl" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+          <button type="submit" class="btn btn-primary w-full">Se connecter <i class="las la-arrow-right" aria-hidden="true"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

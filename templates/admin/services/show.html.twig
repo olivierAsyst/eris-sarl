@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: service.name,
+  back_url: path('admin.services.index'),
+  edit_url: path('admin.services.update', {id: service.id}),
+  delete_url: path('admin.services.delete', {id: service.id}),
+  entity_id: service.id,
+  image_url: service.imageUrl ? media(service, 'image', 'card') : null,
+  public_url: path('app_service_show', {slug: service.slug}),
+  fields: [{label: 'Nom', value: service.name}, {label: 'Adresse de la page', value: '/service/' ~ service.slug}, {label: 'Réalisations liées', value: service.realisations|length ~ ' projet(s)'}, {label: 'Description', value: service.description, type: 'long'}],
+} %}
+{% endblock %}

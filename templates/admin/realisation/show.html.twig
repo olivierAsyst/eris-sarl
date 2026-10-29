@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: realisation.name,
+  back_url: path('admin.realisation.index'),
+  edit_url: path('admin.realisation.edit', {id: realisation.id}),
+  delete_url: path('admin.realisation.delete', {id: realisation.id}),
+  entity_id: realisation.id,
+  image_url: realisation.imageUrl ? media(realisation, 'image', 'card') : null,
+  public_url: path('app_realisation_show', {id: realisation.id, slug: realisation.slug}),
+  fields: [{label: 'Nom', value: realisation.name}, {label: 'Service', value: realisation.service ? realisation.service.name : null}, {label: 'Description', value: realisation.description, type: 'long'}],
+} %}
+{% endblock %}

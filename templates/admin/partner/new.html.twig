@@ -1,0 +1,13 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Ajouter un partenaire | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Ajouter un partenaire',
+  back_url: path('admin.partner.index'),
+  submit_label: 'Ajouter',
+  tips: ['Un logo PNG à fond transparent rend mieux.', 'Le lien du site doit être complet (https://…).'],
+} %}
+{% endblock %}

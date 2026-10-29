@@ -1,0 +1,34 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Partenaires | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.partner.new') }}" class="btn btn-primary btn-sm"><i class="las la-plus" aria-hidden="true"></i> Ajouter un partenaire</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Partenaires', subtitle: 'Logos affichés dans « Ils nous font confiance »', actions: actions} %}
+
+{% if partners is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-handshake', text: 'Aucun partenaire pour le moment.', url: path('admin.partner.new'), label: 'Ajouter un partenaire'} %}
+{% else %}
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    {% for p in partners %}
+      <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5">
+        <div class="grid h-24 place-items-center rounded-xl bg-gray-50">
+          {% if p.logo %}
+            <img src="{{ media(p, 'image', 'logo') }}" alt="" class="max-h-16 max-w-[80%] object-contain" loading="lazy">
+          {% else %}
+            <span class="text-sm text-gray-400">Pas de logo</span>
+          {% endif %}
+        </div>
+        <h2 class="mt-4 font-bold text-gray-900">{{ p.name }}</h2>
+        {% if p.links %}
+          <a href="{{ p.links }}" target="_blank" rel="noopener" class="block truncate text-xs text-brand-700 hover:underline">{{ p.links }}</a>
+        {% else %}
+          <p class="text-xs text-gray-400">Pas de site web</p>
+        {% endif %}
+        <div class="mt-4 flex items-center gap-1 border-t border-gray-100 pt-3">
+          <a href="{{ path('admin.partner.edit', {id: p.id}) }}" class="btn btn-outline btn-sm flex-1"><i class="las la-pen" aria-hidden="true"></i> Modifier</a>
+          {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.partner.delete', {id: p.id}), id: p.id, compact: true} %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

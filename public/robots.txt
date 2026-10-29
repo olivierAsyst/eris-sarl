@@ -1,0 +1,16 @@
+User-agent: *
+# Espace d'administration (protégé par mot de passe, inutile pour les moteurs)
+Disallow: /admin
+Disallow: /login
+Disallow: /logout
+Disallow: /services/
+Disallow: /realisation/
+Disallow: /member
+Disallow: /image/
+Disallow: /partner
+Disallow: /social
+Disallow: /ournumber
+Disallow: /video
+Allow: /media/cache/
+
+Sitemap: https://eris-sarl.com/sitemap.xml

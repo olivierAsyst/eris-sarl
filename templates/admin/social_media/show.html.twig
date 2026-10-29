@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: social_media.name,
+  back_url: path('admin.social.index'),
+  edit_url: path('admin.social.edit', {id: social_media.id}),
+  delete_url: path('admin.social.delete', {id: social_media.id}),
+  entity_id: social_media.id,
+  image_url: social_media.icon ? media(social_media, 'image', 'icon') : null,
+  public_url: path('app_home'),
+  fields: [{label: 'Nom', value: social_media.name}, {label: 'Lien', value: social_media.lien, type: 'link'}],
+} %}
+{% endblock %}

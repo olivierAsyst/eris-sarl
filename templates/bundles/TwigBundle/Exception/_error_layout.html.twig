@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block robots %}noindex, follow{% endblock %}
+
+{% block body %}
+<section class="page-hero">
+  <div class="container-x relative py-24 md:py-32 text-center">
+    <p class="text-7xl md:text-9xl font-extrabold text-accent/90">{{ status_code|default('') }}</p>
+    <h1 class="mt-4 text-3xl md:text-5xl font-extrabold text-white">{% block error_title %}{% endblock %}</h1>
+    <p class="mx-auto mt-5 max-w-xl text-lg text-brand-100/90">{% block error_text %}{% endblock %}</p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <a href="{{ path('app_home') }}" class="btn btn-accent">Retour à l'accueil</a>
+      <a href="{{ path('app_services_front') }}" class="btn btn-ghost-light">Nos services</a>
+      <a href="{{ path('app_contact') }}" class="btn btn-ghost-light">Nous contacter</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

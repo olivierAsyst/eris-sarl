@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notre équipe{% endblock %}
+{% block meta_description %}Découvrez l'équipe d'ERIS SARL : ingénieurs et techniciens en génie civil, eau, assainissement et environnement, basés à Goma (RDC).{% endblock %}
+
+{% block body %}
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'À propos', url: path('app_about')}, {label: 'Notre équipe'}],
+  eyebrow: "L'équipe",
+  title: 'Des experts engagés à vos côtés',
+  lead: "Des professionnels passionnés : chacun apporte son expertise et son savoir-faire pour garantir des solutions adaptées et innovantes.",
+} %}
+
+<section class="section">
+  <div class="container-x">
+    {% if members is not empty %}
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {% for member in members %}
+          <div class="reveal" style="--d:{{ loop.index0 % 4 * 80 }}ms">{% include 'front_member/_card.html.twig' with {member: member} only %}</div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">L'équipe sera bientôt présentée ici.</p>
+    {% endif %}
+
+    <div class="mt-16 flex flex-col items-start gap-6 rounded-3xl bg-brand-50 p-8 md:flex-row md:items-center md:justify-between md:p-10 reveal">
+      <div>
+        <h2 class="text-2xl font-extrabold text-gray-900">Envie de nous rejoindre ?</h2>
+        <p class="mt-2 text-gray-700">Ingénieur, technicien ou stagiaire : envoyez-nous votre candidature.</p>
+      </div>
+      <a href="{{ path('app_contact', {sujet: 'candidature'}) }}#contact-form" class="btn btn-primary">Envoyer une candidature <i class="las la-arrow-right" aria-hidden="true"></i></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

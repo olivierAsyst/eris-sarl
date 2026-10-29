@@ -1,0 +1,13 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Ajouter un membre | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Ajouter un membre',
+  back_url: path('admin.member.index'),
+  submit_label: 'Ajouter',
+  tips: ['Utilisez une photo carrée, visage centré.', 'Les liens doivent être complets (https://…).', 'Les 4 premiers membres apparaissent sur l\'accueil.'],
+} %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: 'Chiffres clés',
+  back_url: path('admin.numbers.index'),
+  edit_url: path('admin.numbers.edit', {id: ournumber.id}),
+  delete_url: path('admin.numbers.delete', {id: ournumber.id}),
+  entity_id: ournumber.id,
+  image_url: null,
+  public_url: path('app_home'),
+  fields: [{label: 'Année de création', value: ournumber.year}, {label: 'Projets réalisés', value: ournumber.projects}, {label: 'Experts techniques', value: ournumber.experts}, {label: 'Partenaires', value: ournumber.partner}],
+} %}
+{% endblock %}

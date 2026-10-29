@@ -1,0 +1,158 @@
+{% extends 'base.html.twig' %}
+
+{#
+  Mise en page de l'administration.
+  Blocs à utiliser dans les pages :
+    - title     : titre de l'onglet
+    - in_body   : contenu de la page
+#}
+
+{% block title %}Administration{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{# L'admin a sa propre navigation : pas d'en-tête/pied de page publics #}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block floating %}{% endblock %}
+{% block flashes %}{% endblock %}
+
+{% block body %}
+{% set route = app.request.attributes.get('_route') %}
+{% set nav = [
+  {group: null, items: [
+    {label: 'Tableau de bord', route: 'app_admin', prefix: 'app_admin', icon: 'la-tachometer-alt'},
+    {label: 'Messages reçus', route: 'admin.messages.index', prefix: 'admin.messages', icon: 'la-inbox'},
+  ]},
+  {group: 'Contenu', items: [
+    {label: 'Services', route: 'admin.services.index', prefix: 'admin.services', icon: 'la-tools'},
+    {label: 'Réalisations', route: 'admin.realisation.index', prefix: 'admin.realisation', icon: 'la-hard-hat'},
+    {label: 'Galerie photo', route: 'admin.galery.index', prefix: 'admin.galery', icon: 'la-images'},
+    {label: 'Équipe', route: 'admin.member.index', prefix: 'admin.member', icon: 'la-users'},
+    {label: 'Partenaires', route: 'admin.partner.index', prefix: 'admin.partner', icon: 'la-handshake'},
+  ]},
+  {group: 'Page d’accueil', items: [
+    {label: 'Chiffres clés', route: 'admin.numbers.index', prefix: 'admin.numbers', icon: 'la-chart-bar'},
+    {label: 'Vidéo d’accueil', route: 'admin.video.index', prefix: 'admin.video', icon: 'la-film'},
+    {label: 'Réseaux sociaux', route: 'admin.social.index', prefix: 'admin.social', icon: 'la-share-alt'},
+  ]},
+  {group: 'Compte', items: [
+    {label: 'Créer un compte', route: 'app_register', prefix: 'app_register', icon: 'la-user-plus'},
+  ]},
+] %}
+
+<div class="min-h-screen bg-gray-50 lg:pl-72">
+  {# ---------- Barre latérale ---------- #}
+  <div id="admin-backdrop" class="menu-backdrop fixed inset-0 z-40 bg-ink/60 backdrop-blur-sm lg:hidden" aria-hidden="true"></div>
+  <aside id="admin-sidebar"
+         class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-ink text-gray-300 transition-transform duration-300 lg:translate-x-0"
+         aria-label="Navigation de l'administration">
+    <div class="flex h-16 items-center justify-between gap-3 border-b border-white/10 px-5">
+      <a href="{{ path('app_admin') }}" class="flex items-center gap-3">
+        <span class="inline-flex rounded-lg bg-white px-2 py-1"><img src="{{ 'images/eris-logos.png'|imagine_filter('logo') }}" alt="" class="h-7 w-auto"></span>
+        <span class="text-sm font-bold text-white">Administration</span>
+      </a>
+      <button type="button" id="admin-sidebar-close" class="grid h-9 w-9 place-items-center rounded-lg hover:bg-white/10 lg:hidden" aria-label="Fermer le menu">
+        <i class="las la-times text-xl" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto px-3 py-5">
+      {% for section in nav %}
+        {% if section.group %}<p class="mt-6 mb-2 px-3 text-[11px] font-bold uppercase tracking-[.15em] text-gray-500">{{ section.group }}</p>{% endif %}
+        <ul class="space-y-1">
+          {% for item in section.items %}
+            {% set active = route starts with item.prefix %}
+            <li>
+              <a href="{{ path(item.route) }}"
+                 class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition {{ active ? 'bg-brand-600 text-white shadow-lg shadow-brand-900/40' : 'hover:bg-white/5 hover:text-white' }}"
+                 {% if active %}aria-current="page"{% endif %}>
+                <i class="las {{ item.icon }} text-xl {{ active ? 'text-white' : 'text-gray-500 group-hover:text-accent' }}" aria-hidden="true"></i>
+                {{ item.label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    </nav>
+
+    <div class="border-t border-white/10 p-4">
+      <div class="flex items-center gap-3 rounded-xl bg-white/5 p-3">
+        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-600 font-bold text-white">{{ app.user ? app.user.userIdentifier|first|upper : '?' }}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-sm font-semibold text-white">{{ app.user ? app.user.userIdentifier : '' }}</span>
+          <span class="block text-xs text-gray-500">Administrateur</span>
+        </span>
+        <a href="{{ path('app_logout') }}" class="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-white/10 hover:text-white" title="Déconnexion" aria-label="Déconnexion">
+          <i class="las la-sign-out-alt text-xl" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  {# ---------- Barre du haut ---------- #}
+  <header class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-gray-200 bg-white/90 px-4 backdrop-blur sm:px-6 lg:px-8">
+    <button type="button" id="admin-sidebar-open" class="grid h-10 w-10 place-items-center rounded-lg text-gray-700 hover:bg-gray-100 lg:hidden"
+            aria-controls="admin-sidebar" aria-expanded="false" aria-label="Ouvrir le menu">
+      <i class="las la-bars text-2xl" aria-hidden="true"></i>
+    </button>
+    <p class="truncate text-sm font-semibold text-gray-500">{% block admin_breadcrumb %}ERIS SARL · Administration{% endblock %}</p>
+    <div class="ml-auto flex items-center gap-2">
+      <a href="{{ path('app_home') }}" target="_blank" class="btn btn-outline btn-sm">
+        <i class="las la-external-link-alt" aria-hidden="true"></i><span class="hidden sm:inline">Voir le site</span>
+      </a>
+    </div>
+  </header>
+
+  {# ---------- Contenu ---------- #}
+  <div class="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    {% for type, messages in app.flashes(['success', 'error', 'warning']) %}
+      {% for message in messages %}
+        <div role="{{ type == 'success' ? 'status' : 'alert' }}" data-flash
+             class="mb-6 flex items-center gap-3 rounded-xl p-4 text-sm font-semibold {{ type == 'success' ? 'bg-brand-50 text-brand-800 ring-1 ring-brand-200' : 'bg-red-50 text-red-800 ring-1 ring-red-200' }}">
+          <i class="las {{ type == 'success' ? 'la-check-circle' : 'la-exclamation-triangle' }} text-xl" aria-hidden="true"></i>
+          <span class="flex-1">{{ message }}</span>
+          <button type="button" class="opacity-60 hover:opacity-100" onclick="this.parentElement.remove()" aria-label="Fermer"><i class="las la-times" aria-hidden="true"></i></button>
+        </div>
+      {% endfor %}
+    {% endfor %}
+
+    {% block in_body %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  (function () {
+    var sb = document.getElementById('admin-sidebar'), bd = document.getElementById('admin-backdrop'), btn = document.getElementById('admin-sidebar-open');
+    function set(open) {
+      sb.classList.toggle('-translate-x-full', !open);
+      bd.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+    btn.addEventListener('click', function () { set(true); });
+    document.getElementById('admin-sidebar-close').addEventListener('click', function () { set(false); });
+    bd.addEventListener('click', function () { set(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+
+    // Confirmation avant suppression
+    document.querySelectorAll('form[data-confirm]').forEach(function (f) {
+      f.addEventListener('submit', function (e) { if (!confirm(f.dataset.confirm)) e.preventDefault(); });
+    });
+
+    // Aperçu immédiat d'une image choisie dans un champ fichier
+    document.querySelectorAll('input[type=file]').forEach(function (input) {
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        var box = document.querySelector('[data-preview-for="' + input.id + '"]') || document.querySelector('[data-preview]');
+        if (!file || !box || !file.type.startsWith('image/')) return;
+        var img = box.querySelector('img') || box.appendChild(document.createElement('img'));
+        img.className = 'w-full rounded-xl object-cover';
+        img.src = URL.createObjectURL(file);
+        box.hidden = false;
+      });
+    });
+  })();
+</script>
+{% endblock %}

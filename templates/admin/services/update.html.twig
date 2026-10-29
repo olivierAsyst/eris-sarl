@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ (service.name),
+  back_url: path('admin.services.index'),
+  delete_url: path('admin.services.delete', {id: service.id}),
+  entity_id: service.id,
+  preview_url: service.imageUrl ? media(service, 'image', 'card') : null,
+  public_url: path('app_service_show', {slug: service.slug}),
+  tips: ['Le nom apparaît dans le menu, le pied de page et l\'adresse de la page.', 'Dans la description, faites des retours à la ligne et des listes avec « - » : ils sont conservés sur le site.', 'Une image horizontale (paysage) rend mieux.'],
+} %}
+{% endblock %}

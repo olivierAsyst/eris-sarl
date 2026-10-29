@@ -1,0 +1,26 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Vidéo d'accueil | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.video.new') }}" class="btn btn-primary btn-sm"><i class="las la-upload" aria-hidden="true"></i> Envoyer une vidéo</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Vidéo d’accueil', subtitle: 'La vidéo la plus récente est utilisée en fond de l’accueil', actions: actions} %}
+
+{% if home_videos is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-film', text: 'Aucune vidéo : l’accueil affiche une photo à la place.', url: path('admin.video.new'), label: 'Envoyer une vidéo'} %}
+{% else %}
+  <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    {% for v in home_videos|sort((a, b) => b.id <=> a.id) %}
+      <article class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 {{ loop.first ? 'ring-brand-300' : 'ring-gray-900/5' }}">
+        <video src="{{ vich_uploader_asset(v, 'video') }}" class="aspect-video w-full bg-black object-cover" muted controls preload="metadata"></video>
+        <div class="flex items-center gap-2 p-4">
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold text-gray-900">{{ v.name ?: 'Sans titre' }}</p>
+            {% if loop.first %}<span class="chip mt-1">Utilisée sur l'accueil</span>{% else %}<span class="mt-1 block text-xs text-gray-400">Non utilisée</span>{% endif %}
+          </div>
+          <a href="{{ path('admin.video.edit', {id: v.id}) }}" class="grid h-9 w-9 place-items-center rounded-lg text-gray-500 hover:bg-brand-50 hover:text-brand-700" title="Modifier" aria-label="Modifier"><i class="las la-pen text-lg" aria-hidden="true"></i></a>
+          {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.video.delete', {id: v.id}), id: v.id, compact: true} %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

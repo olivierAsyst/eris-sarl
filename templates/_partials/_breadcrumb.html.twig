@@ -1,0 +1,27 @@
+{# Fil d'Ariane visible + données structurées BreadcrumbList pour Google.
+   items : [{label: '...', url: '...'}, ..., {label: 'Page courante'}] #}
+{% set crumbs = [{label: 'Accueil', url: path('app_home')}]|merge(items) %}
+{% set light = light ?? false %}
+<nav aria-label="Fil d'Ariane" class="mb-8 text-sm">
+  <ol class="flex flex-wrap items-center gap-1.5 {{ light ? 'text-brand-200/80' : 'text-gray-500' }}">
+    {% for c in crumbs %}
+      <li class="flex items-center gap-1">
+        {% if not loop.first %}<i class="las la-angle-right text-xs opacity-70" aria-hidden="true"></i>{% endif %}
+        {% if c.url is defined and not loop.last %}
+          <a href="{{ c.url }}" class="{{ light ? 'hover:text-white' : 'hover:text-brand-700' }} hover:underline underline-offset-4">{{ c.label }}</a>
+        {% else %}
+          <span class="{{ light ? 'text-white' : 'text-gray-900' }} font-semibold line-clamp-1" aria-current="page">{{ c.label }}</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+</nav>
+<script type="application/ld+json">
+{% set list = [] %}
+{% for c in crumbs %}
+  {% set entry = {'@type': 'ListItem', 'position': loop.index, 'name': c.label} %}
+  {% if c.url is defined %}{% set entry = entry|merge({'item': app.request.schemeAndHttpHost ~ c.url}) %}{% endif %}
+  {% set list = list|merge([entry]) %}
+{% endfor %}
+{{ {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': list}|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
+</script>

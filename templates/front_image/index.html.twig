@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Galerie photo{% endblock %}
+{% block meta_description %}Galerie photo d'ERIS SARL : chantiers, ouvrages d'eau et d'assainissement, bâtiments et activités de terrain en République démocratique du Congo.{% endblock %}
+
+{% block body %}
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'Galerie'}],
+  eyebrow: 'Mémoire visuelle',
+  title: 'Galerie photo',
+  lead: 'Nos activités à travers des moments capturés sur le terrain.',
+} %}
+
+<section class="section !pt-12">
+  <div class="container-x">
+    {% if images is not empty %}
+      <p class="mb-8 text-gray-600">Cliquez sur une photo pour l'agrandir. Pour le détail de chaque projet, consultez <a href="{{ path('app_realisation_front') }}" class="link-arrow">nos réalisations</a>.</p>
+      <ul class="columns-2 md:columns-3 lg:columns-4 gap-4 [&>li]:mb-4">
+        {% for image in images %}
+          <li class="break-inside-avoid reveal" style="--d:{{ loop.index0 % 4 * 70 }}ms">
+            <button type="button" data-lightbox
+                    data-src="{{ media(image, 'image', 'gallery_large') }}"
+                    data-title="{{ image.lieu }}"
+                    data-desc="{{ image.description }}"
+                    class="group relative block w-full overflow-hidden rounded-2xl bg-gray-100 text-left"
+                    aria-label="Agrandir la photo : {{ image.lieu }}{{ image.description ? ' – ' ~ image.description }}">
+              <img src="{{ media(image, 'image', loop.index is odd ? 'gallery_large' : 'gallery_thumb') }}" alt="{{ image.description ?: image.lieu }}"
+                   loading="{{ loop.index > 8 ? 'lazy' : 'eager' }}" decoding="async"
+                   class="w-full h-auto transition-transform duration-700 group-hover:scale-105">
+              <span class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-brand-950/85 via-transparent to-transparent p-4 opacity-90 transition group-hover:opacity-100">
+                <span class="flex items-center gap-1 text-sm font-bold text-white"><i class="las la-map-marker" aria-hidden="true"></i>{{ image.lieu }}</span>
+                {% if image.description %}<span class="mt-0.5 text-xs text-gray-200 line-clamp-2">{{ image.description }}</span>{% endif %}
+              </span>
+              <span class="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-brand-700 opacity-0 transition group-hover:opacity-100" aria-hidden="true"><i class="las la-expand"></i></span>
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-center text-gray-500">Aucune photo pour le moment.</p>
+    {% endif %}
+  </div>
+</section>
+
+{# Visionneuse #}
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" aria-hidden="true">
+  <div class="relative w-full max-w-5xl">
+    <button id="lightbox-close" type="button" class="absolute -top-14 right-0 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Fermer la photo">
+      <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <img id="lightbox-image" alt="" class="w-full max-h-[75vh] object-contain rounded-2xl">
+    <button id="lightbox-prev" type="button" class="absolute left-2 top-1/2 -translate-y-1/2 grid h-11 w-11 place-items-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white" aria-label="Photo précédente">
+      <i class="las la-angle-left text-2xl" aria-hidden="true"></i>
+    </button>
+    <button id="lightbox-next" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 grid h-11 w-11 place-items-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white" aria-label="Photo suivante">
+      <i class="las la-angle-right text-2xl" aria-hidden="true"></i>
+    </button>
+    <div class="mt-4 text-center text-white">
+      <h2 id="lightbox-title" class="text-xl font-bold"></h2>
+      <p id="lightbox-desc" class="text-gray-300 mt-1"></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

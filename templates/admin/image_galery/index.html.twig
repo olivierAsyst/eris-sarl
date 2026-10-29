@@ -1,0 +1,27 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Galerie | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.galery.create') }}" class="btn btn-primary btn-sm"><i class="las la-plus" aria-hidden="true"></i> Ajouter une photo</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Galerie photo', subtitle: image_galeries|length ~ ' photo(s)', actions: actions} %}
+
+{% if image_galeries is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-images', text: 'La galerie est vide.', url: path('admin.galery.create'), label: 'Ajouter une photo'} %}
+{% else %}
+  <ul class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+    {% for img in image_galeries|sort((a, b) => b.id <=> a.id) %}
+      <li class="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5">
+        <a href="{{ path('admin.galery.edit', {id: img.id}) }}" class="block aspect-square overflow-hidden bg-gray-100" aria-label="Modifier la photo {{ img.lieu }}">
+          {% if img.imageUrl %}<img src="{{ media(img, 'image', 'gallery_thumb') }}" alt="" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">{% endif %}
+        </a>
+        <div class="flex items-center gap-2 p-3">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-gray-900">{{ img.lieu }}</p>
+            <p class="truncate text-xs text-gray-500">{{ img.description ?: 'Sans description' }}</p>
+          </div>
+          {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.galery.delete', {id: img.id}), id: img.id, compact: true} %}
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

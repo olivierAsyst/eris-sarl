@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Modifier | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Modifier : ' ~ (partner.name),
+  back_url: path('admin.partner.index'),
+  delete_url: path('admin.partner.delete', {id: partner.id}),
+  entity_id: partner.id,
+  preview_url: partner.logo ? media(partner, 'image', 'logo') : null,
+  public_url: path('app_home'),
+  tips: ['Un logo PNG à fond transparent rend mieux.', 'Le lien du site doit être complet (https://…).'],
+} %}
+{% endblock %}

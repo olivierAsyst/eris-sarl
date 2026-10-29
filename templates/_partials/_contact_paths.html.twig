@@ -1,0 +1,32 @@
+{# Appels à l'action différenciés selon le besoin du visiteur #}
+<section class="section bg-white" aria-labelledby="contact-paths-title">
+  <div class="container-x">
+    <div class="mx-auto max-w-2xl text-center mb-12 reveal">
+      <p class="eyebrow mb-3 justify-center">Contact</p>
+      <h2 id="contact-paths-title" class="section-title">Comment pouvons-nous vous aider ?</h2>
+      <p class="section-lead mt-4">Choisissez votre demande : elle arrivera directement à la bonne personne.</p>
+    </div>
+
+    {% set paths = [
+      {sujet: 'devis', icon: 'la-file-invoice-dollar', title: 'Demander un devis', text: 'Construction, adduction d’eau, étude ou aménagement : décrivez votre projet, nous le chiffrons.'},
+      {sujet: 'partenariat', icon: 'la-handshake', title: 'Devenir partenaire', text: 'ONG, institution ou entreprise : construisons ensemble des projets à impact durable.'},
+      {sujet: 'information', icon: 'la-comment-dots', title: 'Poser une question', text: 'Une question sur nos services, nos références ou notre fonctionnement ?'},
+      {sujet: 'candidature', icon: 'la-user-tie', title: 'Nous rejoindre', text: 'Ingénieur, technicien ou stagiaire : présentez-nous votre profil.'},
+    ] %}
+
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {% for p in paths %}
+        <li class="card reveal group p-6" style="--d:{{ loop.index0 * 80 }}ms">
+          <span class="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-700 transition-colors group-hover:bg-brand-600 group-hover:text-white">
+            <i class="las {{ p.icon }} text-3xl" aria-hidden="true"></i>
+          </span>
+          <h3 class="mt-5 text-lg font-bold text-gray-900">
+            <a href="{{ path('app_contact', {sujet: p.sujet}) }}#contact-form" class="card-link">{{ p.title }}</a>
+          </h3>
+          <p class="mt-2 flex-1 text-sm leading-relaxed text-gray-600">{{ p.text }}</p>
+          <span class="link-arrow mt-5 text-sm">Commencer <i class="las la-arrow-right" aria-hidden="true"></i></span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

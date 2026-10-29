@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ current_service ? 'Réalisations – ' ~ current_service.name : 'Nos réalisations' }}{% endblock %}
+{% block meta_description %}Projets réalisés par ERIS SARL en RDC : bâtiments, adduction d'eau potable, assainissement, études hydro-agricoles et aménagements durables.{% endblock %}
+{# Les pages filtrées ne doivent pas concurrencer la page principale dans Google #}
+{% block robots %}{{ current_service ? 'noindex, follow' : parent() }}{% endblock %}
+
+{% block body %}
+{% include '_partials/_page_hero.html.twig' with {
+  crumbs: [{label: 'Réalisations'}],
+  eyebrow: 'Sur le terrain',
+  title: 'Nos réalisations',
+  lead: 'Bâtiments, eau potable, assainissement, études hydro-agricoles : découvrez les projets menés par nos équipes.',
+} %}
+
+<section class="section !pt-10">
+  <div class="container-x">
+    {% if services is not empty %}
+      <nav aria-label="Filtrer par service" class="mb-10 -mx-4 overflow-x-auto px-4">
+        <ul class="flex w-max gap-2 md:w-auto md:flex-wrap">
+          {% set pill = 'inline-flex whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition' %}
+          <li>
+            <a href="{{ path('app_realisation_front') }}"
+               class="{{ pill }} {{ current_service ? 'bg-white ring-1 ring-gray-200 text-gray-700 hover:ring-brand-400' : 'bg-brand-600 text-white shadow' }}"
+               {% if not current_service %}aria-current="page"{% endif %}>Tous les projets</a>
+          </li>
+          {% for s in services %}
+            {% set active = current_service and current_service.id == s.id %}
+            <li>
+              <a href="{{ path('app_realisation_front', {service: s.slug}) }}"
+                 class="{{ pill }} {{ active ? 'bg-brand-600 text-white shadow' : 'bg-white ring-1 ring-gray-200 text-gray-700 hover:ring-brand-400' }}"
+                 {% if active %}aria-current="page"{% endif %}>{{ s.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+
+    {% if realisations is not empty %}
+      <p class="mb-6 text-sm text-gray-500">{{ realisations|length }} projet{{ realisations|length > 1 ? 's' }}{% if current_service %} en « {{ current_service.name }} »{% endif %}</p>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for realisation in realisations %}
+          {% include 'realisation_front/_card.html.twig' with {realisation: realisation} only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-3xl border-2 border-dashed border-gray-200 p-12 text-center">
+        <i class="las la-folder-open text-5xl text-gray-300" aria-hidden="true"></i>
+        <p class="mt-3 text-gray-600">Aucun projet publié pour l'instant dans cette catégorie.</p>
+        <a href="{{ path('app_realisation_front') }}" class="link-arrow mt-3">Voir tous les projets <i class="las la-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    {% endif %}
+
+    {% if current_service %}
+      <div class="mt-12 text-center">
+        <a href="{{ path('app_service_show', {slug: current_service.slug}) }}" class="btn btn-outline">Découvrir le service {{ current_service.name }}</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

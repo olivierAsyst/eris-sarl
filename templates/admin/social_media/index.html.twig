@@ -1,0 +1,35 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Réseaux sociaux | Admin{% endblock %}
+{% block in_body %}
+{% set actions %}<a href="{{ path('admin.social.new') }}" class="btn btn-primary btn-sm"><i class="las la-plus" aria-hidden="true"></i> Ajouter un réseau</a>{% endset %}
+{% include 'admin/_partials/page_header.html.twig' with {title: 'Réseaux sociaux', subtitle: 'Affichés dans le pied de page de toutes les pages', actions: actions} %}
+
+{% if social_media is empty %}
+  {% include 'admin/_partials/empty.html.twig' with {icon: 'la-share-alt', text: 'Aucun réseau social pour le moment.', url: path('admin.social.new'), label: 'Ajouter un réseau'} %}
+{% else %}
+  {% set shown = social_links()|map(x => x.id) %}
+  <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5">
+    <ul class="divide-y divide-gray-100">
+      {% for s in social_media %}
+        {% set valid = s.id in shown %}
+        <li class="flex items-center gap-4 px-5 py-4">
+          <span class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-gray-100">
+            {% if s.icon %}<img src="{{ media(s, 'image', 'icon') }}" alt="" class="h-7 w-7 object-contain">{% else %}<span class="font-bold text-gray-500">{{ s.name|first|upper }}</span>{% endif %}
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-gray-900">{{ s.name }}</p>
+            <p class="truncate text-xs {{ valid ? 'text-gray-500' : 'text-red-600' }}">{{ s.lien ?: 'Aucun lien' }}</p>
+          </div>
+          {% if valid %}
+            <span class="chip hidden sm:inline-flex"><i class="las la-check" aria-hidden="true"></i> Affiché</span>
+          {% else %}
+            <span class="chip hidden bg-red-50 text-red-700 sm:inline-flex"><i class="las la-eye-slash" aria-hidden="true"></i> Lien invalide : masqué</span>
+          {% endif %}
+          <a href="{{ path('admin.social.edit', {id: s.id}) }}" class="grid h-9 w-9 place-items-center rounded-lg text-gray-500 hover:bg-brand-50 hover:text-brand-700" title="Modifier" aria-label="Modifier {{ s.name }}"><i class="las la-pen text-lg" aria-hidden="true"></i></a>
+          {% include 'admin/_partials/delete_button.html.twig' with {url: path('admin.social.delete', {id: s.id}), id: s.id, compact: true} %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+{% endblock %}

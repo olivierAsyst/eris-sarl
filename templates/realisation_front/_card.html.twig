@@ -1,0 +1,21 @@
+{# Carte d'une réalisation. Paramètre : realisation #}
+{% set url = path('app_realisation_show', {id: realisation.id, slug: realisation.slug}) %}
+<article class="card reveal group">
+  <div class="card-media aspect-[16/10]">
+    {% if realisation.imageUrl %}
+      <img src="{{ media(realisation, 'image', 'card') }}" alt="" width="640" height="400" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+    {% else %}
+      <div class="absolute inset-0 grid place-items-center bg-gradient-to-br from-brand-600 to-brand-900"><i class="las la-hard-hat text-6xl text-white/30" aria-hidden="true"></i></div>
+    {% endif %}
+    {% if realisation.service %}
+      <span class="absolute left-4 top-4 chip bg-white/90 backdrop-blur">{{ realisation.service.name }}</span>
+    {% endif %}
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <h3 class="text-lg font-bold text-gray-900 group-hover:text-brand-700 transition-colors">
+      <a href="{{ url }}" class="card-link">{{ realisation.name }}</a>
+    </h3>
+    <p class="mt-2 flex-1 text-gray-600 leading-relaxed">{{ realisation.description|excerpt(130) }}</p>
+    <span class="link-arrow mt-4">Voir le projet <i class="las la-arrow-right" aria-hidden="true"></i></span>
+  </div>
+</article>

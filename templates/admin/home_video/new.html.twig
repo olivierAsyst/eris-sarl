@@ -1,0 +1,13 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Ajouter une vidéo | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/form_page.html.twig' with {
+  form: form,
+  title: 'Ajouter une vidéo',
+  back_url: path('admin.video.index'),
+  submit_label: 'Ajouter',
+  tips: ['Seule la vidéo la plus récente est utilisée sur l\'accueil.', 'Format MP4 (H.264), sans son, 15 à 30 secondes, idéalement moins de 5 Mo.'],
+} %}
+{% endblock %}

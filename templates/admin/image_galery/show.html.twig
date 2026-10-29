@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Détail | Admin{% endblock %}
+
+{% block in_body %}
+{% include 'admin/_partials/show_page.html.twig' with {
+  title: 'Photo – ' ~ image_galery.lieu,
+  back_url: path('admin.galery.index'),
+  edit_url: path('admin.galery.edit', {id: image_galery.id}),
+  delete_url: path('admin.galery.delete', {id: image_galery.id}),
+  entity_id: image_galery.id,
+  image_url: image_galery.imageUrl ? media(image_galery, 'image', 'gallery_thumb') : null,
+  public_url: path('app_front_image'),
+  fields: [{label: 'Lieu', value: image_galery.lieu}, {label: 'Description', value: image_galery.description, type: 'long'}],
+} %}
+{% endblock %}

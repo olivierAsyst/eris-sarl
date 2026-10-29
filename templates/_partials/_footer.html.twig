@@ -1,0 +1,89 @@
+<footer class="relative bg-ink text-gray-300 overflow-hidden">
+  <div class="pointer-events-none absolute -top-40 -right-40 h-96 w-96 rounded-full bg-brand-600/20 blur-3xl" aria-hidden="true"></div>
+
+  {# Bandeau d'appel à l'action #}
+  <div class="container-x relative pt-16">
+    <div class="flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-brand-700 to-brand-600 p-8 md:flex-row md:items-center md:justify-between md:p-10">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-white">Un projet en tête ? Parlons-en.</h2>
+        <p class="mt-2 text-brand-100">Étude, devis ou visite de terrain : notre équipe vous répond sous 48 h ouvrées.</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="{{ path('app_contact', {sujet: 'devis'}) }}" class="btn btn-accent">Demander un devis <i class="las la-arrow-right" aria-hidden="true"></i></a>
+        <a href="tel:{{ contact_phone }}" class="btn btn-ghost-light"><i class="las la-phone" aria-hidden="true"></i> {{ contact_phone_display }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-x relative py-14">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <span class="inline-flex rounded-xl bg-white px-3 py-2">
+          <img class="h-9 w-auto" src="{{ 'images/eris-logos.png'|imagine_filter('logo') }}" alt="ERIS SARL" width="100" height="36" loading="lazy">
+        </span>
+        <p class="mt-5 text-sm leading-relaxed text-gray-400 max-w-sm">
+          Engineering for Revolutionary Infrastructures Solutions. Nous vous accompagnons dans la maîtrise technique de vos projets, avec des solutions
+          <span class="text-gray-200">fiables, adaptées à vos contraintes et pensées pour durer</span>.
+        </p>
+
+        {% set socials = social_links() %}
+        {% if socials is not empty %}
+          <ul class="flex flex-wrap gap-2 mt-6" aria-label="Réseaux sociaux">
+            {% for social in socials %}
+              <li>
+                <a href="{{ social.lien }}" target="_blank" rel="noopener noreferrer"
+                   class="grid h-10 w-10 place-items-center rounded-full bg-white/10 hover:bg-white/20 transition"
+                   aria-label="{{ social.name }} (nouvel onglet)" title="{{ social.name }}">
+                  {% if social.icon %}
+                    <img src="{{ media(social, 'image', 'icon') }}" alt="" width="20" height="20" class="h-5 w-5 rounded object-contain" loading="lazy">
+                  {% else %}
+                    <span class="font-bold text-white" aria-hidden="true">{{ social.name|first|upper }}</span>
+                  {% endif %}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="lg:col-span-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-white mb-4">Nos services</h2>
+        <ul class="space-y-2.5 text-sm">
+          {% for s in menu_services() %}
+            <li><a class="hover:text-accent transition-colors" href="{{ path('app_service_show', {slug: s.slug}) }}">{{ s.name }}</a></li>
+          {% else %}
+            <li><a class="hover:text-accent" href="{{ path('app_services_front') }}">Tous nos services</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="lg:col-span-2">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-white mb-4">L'entreprise</h2>
+        <ul class="space-y-2.5 text-sm">
+          <li><a class="hover:text-accent transition-colors" href="{{ path('app_about') }}">À propos</a></li>
+          <li><a class="hover:text-accent transition-colors" href="{{ path('app_front_member') }}">Notre équipe</a></li>
+          <li><a class="hover:text-accent transition-colors" href="{{ path('app_realisation_front') }}">Réalisations</a></li>
+          <li><a class="hover:text-accent transition-colors" href="{{ path('app_front_image') }}">Galerie photo</a></li>
+          <li><a class="hover:text-accent transition-colors" href="{{ path('app_contact', {sujet: 'candidature'}) }}">Recrutement</a></li>
+        </ul>
+      </div>
+
+      <div class="lg:col-span-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-white mb-4">Contact</h2>
+        <address class="not-italic space-y-3 text-sm">
+          <p class="flex gap-3"><i class="las la-map-marker-alt text-lg text-accent" aria-hidden="true"></i><span>142, av. FAGOP, Q. Kyeshero<br>Goma, Nord-Kivu, RDC</span></p>
+          <p class="flex gap-3"><i class="las la-phone text-lg text-accent" aria-hidden="true"></i><a class="hover:text-white" href="tel:{{ contact_phone }}">{{ contact_phone_display }}</a></p>
+          <p class="flex gap-3"><i class="las la-envelope text-lg text-accent" aria-hidden="true"></i><a class="hover:text-white break-all" href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+        </address>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+      <p>&copy; {{ "now"|date("Y") }} ERIS SARL. Tous droits réservés. RCCM : CD/GOM/RCCM/21-B-00245</p>
+      <p>
+        Conçu et développé par
+        <a href="https://wa.me/243999644524" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white">+243 999 644 524</a>
+      </p>
+    </div>
+  </div>
+</footer>
