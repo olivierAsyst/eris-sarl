@@ -39,6 +39,14 @@ class Services
     #[Assert\Image()]
     private ?File $image = null;
 
+    // Deuxième image (facultative) : un service a au maximum 2 images
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image2Url = null;
+
+    #[Vich\UploadableField(mapping: 'services', fileNameProperty: 'image2Url')]
+    #[Assert\Image()]
+    private ?File $image2 = null;
+
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
@@ -112,6 +120,34 @@ class Services
         // Sans changement d'un champ mappé, Doctrine n'enregistre rien
         // et Vich n'uploade pas la nouvelle image.
         if (null !== $image) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
+    public function getImage2Url(): ?string
+    {
+        return $this->image2Url;
+    }
+
+    public function setImage2Url(?string $image2Url): static
+    {
+        $this->image2Url = $image2Url;
+
+        return $this;
+    }
+
+    public function getImage2(): ?File
+    {
+        return $this->image2;
+    }
+
+    public function setImage2(?File $image2): static
+    {
+        $this->image2 = $image2;
+
+        if (null !== $image2) {
             $this->updatedAt = new \DateTimeImmutable();
         }
 

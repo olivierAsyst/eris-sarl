@@ -1,0 +1,57 @@
+{#
+  Éditeur de texte (Quill) pour les champs <textarea data-rich-text>.
+  Le HTML produit est nettoyé côté serveur (App\Text\RichText) avant l'enregistrement.
+#}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+<style>
+  .rte { border-radius: .85rem; overflow: hidden; border: 1px solid #d1d5db; background: #fff; }
+  .rte .ql-toolbar.ql-snow { border: 0; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+  .rte .ql-container.ql-snow { border: 0; font-family: inherit; font-size: 1rem; }
+  .rte .ql-editor { min-height: 18rem; line-height: 1.7; }
+  .rte .ql-editor h2 { font-size: 1.35rem; font-weight: 700; margin: .8em 0 .3em; }
+  .rte .ql-editor h3 { font-size: 1.15rem; font-weight: 700; margin: .7em 0 .25em; }
+  .rte:focus-within { border-color: var(--color-brand-500, #26995f); box-shadow: 0 0 0 4px rgba(38,153,95,.15); }
+  .rte.is-invalid { border-color: #dc2626; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+  (function () {
+    if (!window.Quill) return; // CDN indisponible : la zone de texte classique reste utilisable
+
+    document.querySelectorAll('textarea[data-rich-text]').forEach(function (textarea) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'rte' + (textarea.getAttribute('aria-invalid') === 'true' ? ' is-invalid' : '');
+      var editor = document.createElement('div');
+      editor.innerHTML = textarea.value; // HTML déjà nettoyé par le serveur
+      wrapper.appendChild(editor);
+      textarea.insertAdjacentElement('afterend', wrapper);
+      textarea.hidden = true;
+
+      var quill = new Quill(editor, {
+        theme: 'snow',
+        placeholder: 'Présentez le service : approche, prestations, atouts…',
+        modules: {
+          toolbar: [
+            [{ header: [2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['blockquote', 'link'],
+            ['clean']
+          ]
+        },
+        formats: ['header', 'bold', 'italic', 'underline', 'list', 'blockquote', 'link']
+      });
+
+      var label = document.querySelector('label[for="' + textarea.id + '"]');
+      if (label) {
+        quill.root.setAttribute('aria-label', label.textContent.trim());
+        label.addEventListener('click', function () { quill.focus(); });
+      }
+
+      // Recopie le contenu dans le champ du formulaire avant l'envoi
+      textarea.form.addEventListener('submit', function () {
+        textarea.value = quill.getText().trim() === '' ? '' : quill.root.innerHTML;
+      });
+    });
+  })();
+</script>

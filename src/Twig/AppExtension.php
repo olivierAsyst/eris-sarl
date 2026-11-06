@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Repository\ServicesRepository;
+use App\Text\RichText;
 use App\Repository\SocialMediaRepository;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
@@ -30,6 +31,8 @@ final class AppExtension extends AbstractExtension
         return [
             new TwigFilter('excerpt', $this->excerpt(...)),
             new TwigFilter('meta_description', $this->metaDescription(...)),
+            // Description mise en forme (HTML nettoyé, ou ancien texte brut converti)
+            new TwigFilter('rich_text', RichText::toHtml(...), ['is_safe' => ['html']]),
         ];
     }
 
@@ -47,7 +50,10 @@ final class AppExtension extends AbstractExtension
      */
     public function excerpt(?string $text, int $length = 160, string $suffix = '…'): string
     {
-        $text = trim((string) preg_replace('/\s+/u', ' ', strip_tags((string) $text)));
+        // Les balises deviennent des espaces (sinon « </p><p> » colle deux mots), puis &amp; -> &
+        $text = strip_tags((string) preg_replace('/<[^>]*>/', ' ', (string) $text));
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim((string) preg_replace('/\s+/u', ' ', $text));
         if (mb_strlen($text) <= $length) {
             return $text;
         }

@@ -35,7 +35,11 @@
              class="mb-10 w-full rounded-3xl object-cover shadow-xl max-h-[500px] reveal">
       {% endif %}
       <h2 class="text-2xl font-extrabold text-gray-900 mb-4">Présentation</h2>
-      <div class="prose-text">{{ service.description }}</div>
+      <div class="rich-text">{{ service.description|rich_text }}</div>
+      {% if service.image2Url %}
+        <img src="{{ media(service, 'image2', 'detail') }}" alt="{{ service.name }}" width="1200" height="750" loading="lazy" decoding="async"
+             class="mt-10 w-full rounded-3xl object-cover shadow-xl max-h-[500px] reveal">
+      {% endif %}
     </div>
 
     <aside class="lg:col-span-4">

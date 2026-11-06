@@ -22,7 +22,7 @@ La commande `app:dev:seed` refuse de s'exécuter sur une base autre que SQLite :
 
    ```bash
    composer install --no-dev --optimize-autoloader     # installe liip/imagine-bundle
-   php bin/console doctrine:migrations:migrate -n      # nouvelle migration Version20261029080000
+   php bin/console doctrine:migrations:migrate -n      # migrations Version20261029080000 et Version20261106090000
    php bin/console cache:clear
    php bin/console app:images:optimize --dry-run       # liste les photos trop lourdes
    php bin/console app:images:optimize                 # les réduit (max 2400 px) – faire une sauvegarde avant
@@ -93,6 +93,19 @@ de la même façon (`#` → `%23`, `/` → `%2F`, etc.).
   bouton désactivé après le clic, redirection après envoi (un rafraîchissement ne renvoie pas le message).
 - Lien direct avec type présélectionné : `/contact?sujet=devis|partenariat|information|candidature`.
 
+## 3 bis. Services : 2 images et description mise en forme
+
+- **Deux images par service** (Admin → Services → Ajouter / Modifier) : « Image principale » (cartes, haut de
+  la page) et « Deuxième image » facultative (affichée sous la description). Chaque image peut être remplacée
+  ou supprimée. Nouvelle colonne `services.image2_url` (migration `Version20261106090000`).
+- **Éditeur de texte** pour la description : titres, gras, italique, souligné, listes, citation, liens.
+  L'éditeur (Quill 2.0.3) est chargé depuis `cdn.jsdelivr.net` ; si le CDN ne répond pas, la zone de texte
+  classique reste utilisable.
+- **Sécurité** : le HTML est nettoyé à l'enregistrement et à l'affichage (`src/Text/RichText.php`) ; seules
+  les balises de mise en forme sont gardées (pas de script, de style ni d'image).
+- Les anciennes descriptions en texte brut s'affichent toujours correctement (paragraphes et listes « - »
+  convertis) et passent au nouveau format à leur prochaine modification.
+
 ## 4. Contrôles à refaire après mise en ligne (phase 5)
 
 - [ ] Envoyer un message test depuis `/contact` → réception sur `CONTACT_EMAIL` + accusé de réception ;
@@ -103,5 +116,7 @@ de la même façon (`#` → `%23`, `/` → `%2F`, etc.).
 - [ ] Liens réseaux sociaux du pied de page (seules les URL valides sont affichées).
 - [ ] PageSpeed Insights (https://pagespeed.web.dev) sur l'accueil et une page service, mobile et ordinateur.
 - [ ] Google Search Console : déclarer `https://eris-sarl.com/sitemap.xml`.
+- [ ] Admin → Services : modifier un service, mettre en forme la description, ajouter une 2e image ;
+      vérifier la page publique du service.
 - [ ] Admin → Réalisations : rattacher chaque projet à son service (champ « Service concerné »).
 - [ ] Renseigner l'adresse exacte du bureau de Bukavu (`templates/contact/index.html.twig`).

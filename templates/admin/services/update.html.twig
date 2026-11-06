@@ -11,6 +11,7 @@
   entity_id: service.id,
   preview_url: service.imageUrl ? media(service, 'image', 'card') : null,
   public_url: path('app_service_show', {slug: service.slug}),
-  tips: ['Le nom apparaît dans le menu, le pied de page et l\'adresse de la page.', 'Dans la description, faites des retours à la ligne et des listes avec « - » : ils sont conservés sur le site.', 'Une image horizontale (paysage) rend mieux.'],
+  tips: ['Le nom apparaît dans le menu, le pied de page et l\'adresse de la page.', "Utilisez la barre de l'éditeur pour les titres, le gras, les listes et les liens.", "Deux images maximum : l'image principale et une deuxième, affichée sous la description.", 'Des images horizontales (paysage) rendent mieux.'],
 } %}
+{% include 'admin/_partials/rich_text_editor.html.twig' %}
 {% endblock %}

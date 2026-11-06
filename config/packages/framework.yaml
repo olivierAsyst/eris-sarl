@@ -14,7 +14,7 @@ framework:
     # Version ajoutée aux URL des CSS/JS (?v=...) : à incrémenter après chaque mise à jour
     # de public/css/app.css ou public/js/app.js pour forcer les navigateurs à recharger.
     assets:
-        version: '2026.10.3'
+        version: '2026.11.1'
 
     #esi: true
     #fragments: true

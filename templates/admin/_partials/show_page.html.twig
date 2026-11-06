@@ -1,7 +1,7 @@
 {#
   Page de détail.
   Paramètres : title, back_url, edit_url, delete_url, entity_id, image_url?, public_url?,
-               fields : [{label, value, type: text|long|link}]
+               fields : [{label, value, type: text|long|link|html}], images? (liste d'URL, en plus de image_url)
 #}
 {% set actions %}
   {% if public_url is defined and public_url %}<a href="{{ public_url }}" target="_blank" class="btn btn-outline btn-sm"><i class="las la-external-link-alt" aria-hidden="true"></i> Voir sur le site</a>{% endif %}
@@ -18,6 +18,7 @@
           <dd class="text-gray-900 sm:col-span-2">
             {% if f.value is empty %}<span class="text-gray-400">—</span>
             {% elseif f.type|default('text') == 'link' %}<a href="{{ f.value }}" target="_blank" rel="noopener" class="break-all text-brand-700 hover:underline">{{ f.value }}</a>
+            {% elseif f.type|default('text') == 'html' %}<div class="rich-text text-base">{{ f.value|rich_text }}</div>
             {% elseif f.type|default('text') == 'long' %}<div class="whitespace-pre-line leading-relaxed">{{ f.value }}</div>
             {% else %}{{ f.value }}{% endif %}
           </dd>
@@ -29,6 +30,9 @@
     {% if image_url is defined and image_url %}
       <div class="overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-gray-900/5"><img src="{{ image_url }}" alt="" class="w-full rounded-xl object-cover"></div>
     {% endif %}
+    {% for extra in images|default([])|filter(u => u) %}
+      <div class="overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-gray-900/5"><img src="{{ extra }}" alt="" class="w-full rounded-xl object-cover"></div>
+    {% endfor %}
     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
       {% include 'admin/_partials/delete_button.html.twig' with {url: delete_url, id: entity_id} %}
     </div>

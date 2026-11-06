@@ -10,7 +10,8 @@
   delete_url: path('admin.services.delete', {id: service.id}),
   entity_id: service.id,
   image_url: service.imageUrl ? media(service, 'image', 'card') : null,
+  images: [service.image2Url ? media(service, 'image2', 'card') : null],
   public_url: path('app_service_show', {slug: service.slug}),
-  fields: [{label: 'Nom', value: service.name}, {label: 'Adresse de la page', value: '/service/' ~ service.slug}, {label: 'Réalisations liées', value: service.realisations|length ~ ' projet(s)'}, {label: 'Description', value: service.description, type: 'long'}],
+  fields: [{label: 'Nom', value: service.name}, {label: 'Adresse de la page', value: '/service/' ~ service.slug}, {label: 'Réalisations liées', value: service.realisations|length ~ ' projet(s)'}, {label: 'Description', value: service.description, type: 'html'}],
 } %}
 {% endblock %}
